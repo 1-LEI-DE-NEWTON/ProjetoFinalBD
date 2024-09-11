@@ -11,6 +11,7 @@ namespace ProjetoFinalBD.Models
         public int Id { get; set; }
         public string NumeroCartao { get; set; }
         public string Cvc { get; set; }
+        public int CartaoId { get; set; } // Foreign Key para CartaoCredito
         public string TipoCartao { get; set; } // fisico/virtual
         public string NomeCartao { get; set; }
         public string TipoTransacao { get; set; } // debito/credito

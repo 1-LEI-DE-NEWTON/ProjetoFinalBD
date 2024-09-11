@@ -9,7 +9,7 @@ namespace ProjetoFinalBD.Models
     public class Pagamento
     {
         public int Id { get; set; }
-        public double ValorTotal { get; set; }
+        public string ValorTotal { get; set; }
         public DateTime DataPagamento { get; set; }
         public int FaturaCartaoId { get; set; } // Foreign Key para FaturaCartao
         public string ValorParcial { get; set; }

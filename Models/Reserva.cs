@@ -9,9 +9,9 @@ namespace ProjetoFinalBD.Models
     public class Reserva
     {
         public int Id { get; set; }
-        public double Valor { get; set; }
-        public DateTime DataMovimentacao { get; set; }
-        public string TipoMovimentacao { get; set; } // entrada/saida
+        public double Saldo { get; set; }
+        public double Taxa { get; set; }
+        public string ReservaCol { get; set; }
         public int ContaId { get; set; } // Foreign Key para Conta
     }
 }
