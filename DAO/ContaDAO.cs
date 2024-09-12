@@ -83,9 +83,8 @@ public class ContaDAO : DAOBase
                 }
             }
         }
-    }
-
-    //Get Contas By ClienteId
+    }    
+    
     public List<Conta> GetContasByClienteId(int clienteId)
     {
         using (var connection = GetConnection())
