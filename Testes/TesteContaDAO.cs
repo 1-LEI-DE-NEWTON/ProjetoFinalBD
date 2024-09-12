@@ -22,9 +22,7 @@ namespace ProjetoFinalBD.Testes
             contaDAO = new ContaDAO(connectionString);
             clienteDAO = new ClienteDAO(connectionString);
             pessoaDAO = new PessoaDAO(connectionString);
-        }
-
-        //atribuir uma nova conta a um cliente ja existente
+        }        
 
         public void RunTests()
         {
@@ -79,11 +77,7 @@ namespace ProjetoFinalBD.Testes
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
             clienteDAO.Update(clienteInserido);
-
-            //Deletar conta
-
-
-
+            
         }
     }
 }
