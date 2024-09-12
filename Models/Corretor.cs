@@ -10,5 +10,7 @@ namespace ProjetoFinalBD.Models
     {
         public int Id { get; set; }
         public string Nome { get; set; }
+        // Relacionamento 1-N com Compra
+        public List<Compra> Compras { get; set; }
     }
 }

@@ -12,6 +12,9 @@ namespace ProjetoFinalBD.Models
         public string Valor { get; set; }
         public DateTime DataMovimentacao { get; set; }
         public string TipoMovimentacao { get; set; } // entrada/saida
-        public int? ContaId { get; set; } // Foreign Key para Conta
+        
+        // Foreign Key para Conta
+        public int ContaId { get; set; }
+        public Conta Conta { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace ProjetoFinalBD.Models
         public DateTime DataMovimentacao { get; set; }
         public double Valor { get; set; }
         public int? CartaoTransacaoId { get; set; } // Foreign Key para CartaoTransacao
+        public CartaoTransacao CartaoTransacao { get; set; }
         public string TipoMovimentacao { get; set; } // entrada/saida
     }
 }

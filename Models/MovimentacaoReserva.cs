@@ -12,6 +12,9 @@ namespace ProjetoFinalBD.Models
         public DateTime DataMovimentacao { get; set; }
         public double Valor { get; set; }
         public string TipoMovimentacao { get; set; } // entrada/saida
-        public int? ReservaId { get; set; } // Foreign Key para Reserva
+
+        // Foreign Key para Reserva
+        public int ReservaId { get; set; }
+        public Reserva Reserva { get; set; }
     }
 }

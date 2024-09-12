@@ -10,5 +10,7 @@ namespace ProjetoFinalBD.Models
     {
         public int Id { get; set; }
         public string Descricao { get; set; }
+        // Relacionamento 1-N com BoletoCustomizado
+        public List<BoletoCustomizado> BoletosCustomizados { get; set; }
     }
 }

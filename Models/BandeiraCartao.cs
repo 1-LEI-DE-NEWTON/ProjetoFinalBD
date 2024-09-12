@@ -10,5 +10,7 @@ namespace ProjetoFinalBD.Models
     {
         public int Id { get; set; }
         public string Descricao { get; set; }
+        // Relacionamento 1-N com CartaoTransacao
+        public List<CartaoTransacao> CartoesTransacao { get; set; }
     }
 }

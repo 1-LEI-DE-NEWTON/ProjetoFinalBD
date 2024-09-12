@@ -14,7 +14,9 @@ namespace ProjetoFinalBD.Models
         public double TaxaParcelamento { get; set; }
         public string Credor { get; set; }
         public int? CorretorId { get; set; } // Foreign Key para Corretor
+        public Corretor Corretor { get; set; }
         public int? CartaoTransacaoId { get; set; } // Foreign Key para CartaoTransacao
+        public CartaoTransacao CartaoTransacao { get; set; }
         public DateTime DataCompra { get; set; }
     }
 }

@@ -11,5 +11,6 @@ namespace ProjetoFinalBD.Models
         public int Id { get; set; }
         public string Descricao { get; set; }
         public int? FaturaCartaoId { get; set; } // Foreign Key para FaturaCartao
+        public FaturaCartao FaturaCartao { get; set; }
     }
 }

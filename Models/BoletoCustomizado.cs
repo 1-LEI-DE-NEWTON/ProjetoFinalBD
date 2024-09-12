@@ -13,7 +13,9 @@ namespace ProjetoFinalBD.Models
         public DateTime DataVencimento { get; set; }
         public DateTime DataGeracao { get; set; }
         public string CodigoBarras { get; set; }
-        public int? TipoBoletoCustomizadoId { get; set; }  // Chave estrangeira opcional
-        public int? FaturaCartaoId { get; set; }  // Chave estrangeira opcional
+        public int? TipoBoletoCustomizadoId { get; set; }  // Chave estrangeira 
+        public TipoBoletoCustomizado TipoBoletoCustomizado { get; set; }
+        public int? FaturaCartaoId { get; set; }  // Chave estrangeira 
+        public FaturaCartao FaturaCartao { get; set; }
     }
 }

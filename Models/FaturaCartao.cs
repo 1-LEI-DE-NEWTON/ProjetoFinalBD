@@ -14,5 +14,8 @@ namespace ProjetoFinalBD.Models
         public string Valor { get; set; }
         public string? DataPagamento { get; set; }
         public int? CartaoCreditoId { get; set; } // Foreign Key para CartaoCredito
+        public CartaoCredito CartaoCredito { get; set; }
+        // Relacionamento 1-N com ItensFatura
+        public List<ItensFatura> ItensFaturas { get; set; }
     }
 }
