@@ -19,10 +19,11 @@ class Program
 
 
 
-                //#region Testes Pessoa
+                #region Testes
+                #region Testes Pessoa
                 //TestePessoaDAO pessoaDAOTeste = new TestePessoaDAO();
                 //pessoaDAOTeste.RunTests();
-                //#endregion Testes Pessoa
+                #endregion Testes Pessoa
 
                 #region Testes Cliente
                 //TesteClienteDAO clienteDAOTeste = new TesteClienteDAO();
@@ -34,6 +35,7 @@ class Program
                 contaDAOTeste.RunTests();
                 #endregion
 
+                #endregion Testes
 
 
             }

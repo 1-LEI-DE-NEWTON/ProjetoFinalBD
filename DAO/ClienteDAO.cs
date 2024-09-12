@@ -66,6 +66,22 @@ namespace ProjetoFinalBD.DAO
                         }                        
                     }
 
+                    //Adiciona TipoConta
+                    
+                    foreach (var conta in cliente.Contas)
+                    {
+                        string insertTipoContaQuery = "INSERT INTO TipoConta (Descricao) " +
+                            "VALUES (@Descricao)";
+
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = insertTipoContaQuery;
+                            command.Parameters.AddWithValue("Descricao", conta.TipoConta.Descricao);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
                     transaction.Commit();
 
                 }

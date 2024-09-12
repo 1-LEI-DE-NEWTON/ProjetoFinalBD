@@ -12,19 +12,42 @@ public class ContaDAO : DAOBase
         using (var connection = GetConnection())        
         {
             connection.Open();
-            
+
+            var transaction = connection.BeginTransaction();
+
             string query = "INSERT INTO Conta (Saldo, LimiteNegativo, ClienteId, TipoContaId) " +
                 "VALUES (@Saldo, @LimiteNegativo, @ClienteId, @TipoContaId)";
-
-            using (var command = new MySqlCommand(query, connection))
+            try
             {
-                command.Parameters.AddWithValue("@Saldo", conta.Saldo);
-                command.Parameters.AddWithValue("@LimiteNegativo", conta.LimiteNegativo);
-                command.Parameters.AddWithValue("@ClienteId", conta.ClienteId);
-                command.Parameters.AddWithValue("@TipoContaId", conta.TipoConta.Id);
+                //Adiciona conta
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Saldo", conta.Saldo);
+                    command.Parameters.AddWithValue("@LimiteNegativo", conta.LimiteNegativo);
+                    command.Parameters.AddWithValue("@ClienteId", conta.ClienteId);
+                    command.Parameters.AddWithValue("@TipoContaId", conta.TipoConta.Id);
 
-                command.ExecuteNonQuery();
-            }            
+                    command.ExecuteNonQuery();
+                }
+
+                //Adiciona TipoConta
+                query = "INSERT INTO TipoConta (Descricao) VALUES (@Descricao)";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Descricao", conta.TipoConta.Descricao);
+
+                    command.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+
         }
     }
 
