@@ -48,16 +48,35 @@ namespace ProjetoFinalBD.Testes
 
             Console.WriteLine("Teste de inserção de cliente passou");
             
-            Console.WriteLine("Teste de atualização de cliente");
-
-            //var pessoa2 = new Pessoa { Nome = "Jake Doe", Cpf = "11223344556" };
-            //var cliente2 = new Cliente { Pessoa = pessoa, FatorRisco = "Alto", RendaMensal = "9000" };
-            
-            //_clienteDAO.Insert(cliente);
+            Console.WriteLine("Teste de atualização de cliente");                          
 
             clienteInserido.FatorRisco = "Médio";
             clienteInserido.RendaMensal = "5000";
             _clienteDAO.Update(clienteInserido);
+
+            var clienteAtualizado = _clienteDAO.GetByPessoaId(idPessoa);
+
+            if (clienteAtualizado.FatorRisco != "Médio" || clienteAtualizado.RendaMensal != "5000")
+            {
+                throw new Exception("Update test failed");
+            }
+
+            Console.WriteLine("Teste de atualização de cliente passou");
+
+            Console.WriteLine("Teste de exclusão de cliente");
+
+            _clienteDAO.Delete(clienteAtualizado.Id);
+
+            _pessoaDAO.Delete(idPessoa);
+
+            var clienteExcluido = _clienteDAO.GetByPessoaId(idPessoa);
+
+            if (clienteExcluido != null)
+            {
+                throw new Exception("Delete test failed");
+            }
+
+            Console.WriteLine("Teste de exclusão de cliente passou");            
         }
     }
 }

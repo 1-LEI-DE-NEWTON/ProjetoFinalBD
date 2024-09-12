@@ -147,6 +147,7 @@ namespace ProjetoFinalBD.DAO
                 try
                 {
                     Cliente cliente = GetById(id);
+                    
                     string query = "DELETE FROM cliente WHERE id = @id";
 
                     using (var command = connection.CreateCommand())

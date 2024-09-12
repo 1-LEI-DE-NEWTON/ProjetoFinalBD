@@ -61,6 +61,73 @@ public class ContaDAO : DAOBase
             }
         }
     }
+
+    public Conta GetByClienteId(int id)
+    {
+        using (var connection = GetConnection())
+        {
+            connection.Open();
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT * FROM Conta WHERE ClienteId = @ClienteId";
+                command.Parameters.AddWithValue("@ClienteId", id);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new Conta
+                        {
+                            Id = reader.GetInt32("Id"),
+                            Saldo = reader.GetDouble("Saldo"),
+                            LimiteNegativo = reader.GetDouble("LimiteNegativo"),
+                            ClienteId = reader.GetInt32("ClienteId"),
+                            TipoContaId = reader.GetInt32("TipoContaId")
+                        };
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+    }
+    
+    public Conta GetByTipoContaId(int it)
+    {
+        using (var connection = GetConnection())
+        {
+            connection.Open();
+
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT * FROM Conta WHERE TipoContaId = @TipoContaId";
+                command.Parameters.AddWithValue("@TipoContaId", it);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new Conta
+                        {
+                            Id = reader.GetInt32("Id"),
+                            Saldo = reader.GetDouble("Saldo"),
+                            LimiteNegativo = reader.GetDouble("LimiteNegativo"),
+                            ClienteId = reader.GetInt32("ClienteId"),
+                            TipoContaId = reader.GetInt32("TipoContaId")
+                        };
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+    }
     
     public void Update(Conta conta)
     {

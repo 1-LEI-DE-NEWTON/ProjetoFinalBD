@@ -10,7 +10,7 @@ namespace ProjetoFinalBD.Models
     {
         public int Id { get; set; }
         public string DataFechamento { get; set; }
-        public int? ContaId { get; set; } // Foreign Key para
+        public int? ContaId { get; set; } // Foreign Key para Conta
         public Conta conta { get; set; }
         public int? CategoriaCartaoId { get; set; } // Foreign Key para CategoriaCartao
         public CategoriaCartao CategoriaCartao { get; set; }
