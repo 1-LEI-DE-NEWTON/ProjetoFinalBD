@@ -9,7 +9,7 @@ namespace ProjetoFinalBD.Models
     public class TipoBoletoCustomizado
     {
         public int Id { get; set; }
-        public string Descricao { get; set; }
+        public string Descricao { get; set; } //CobrançaCustomizada ; BoletoExterno ; FaturaCartao
         // Relacionamento 1-N com BoletoCustomizado
         public List<BoletoCustomizado> BoletosCustomizados { get; set; }
     }
