@@ -12,6 +12,7 @@ namespace ProjetoFinalBD.Testes
     {
         private readonly ClienteDAO _clienteDAO;
         private readonly PessoaDAO _pessoaDAO;
+        private readonly ContaDAO _contaDAO;
 
         public TesteClienteDAO()
         {
@@ -28,23 +29,37 @@ namespace ProjetoFinalBD.Testes
                 Nome = "João",
                 Cpf = "12345678902"
             };
+            var conta = new Conta
+            {
+                Saldo = 1000,
+                LimiteNegativo = 0,
+                TipoConta = new TipoConta { Id = 1, Descricao = "Conta Corrente" }
+            };
             var cliente = new Cliente
             {
                 Pessoa = pessoa,
                 FatorRisco = "Baixo",
-                RendaMensal = "1000"
+                RendaMensal = "1000",
+                Contas = new List<Conta> { conta }
             };
+            
 
             _clienteDAO.Insert(cliente);            
 
             var idPessoa = _pessoaDAO.GetByCpf(pessoa.Cpf).Id;
 
             var clienteInserido = _clienteDAO.GetByPessoaId(idPessoa);
+        
+            //var contas = _contaDAO.GetContasByClienteId(clienteInserido.Id);
+
+            //clienteInserido.Contas = contas;
 
             if (clienteInserido == null || clienteInserido.Pessoa.Cpf != pessoa.Cpf)
             {
                 throw new Exception("Insert test failed");
             }
+
+            //Console.WriteLine(clienteInserido);
 
             Console.WriteLine("Teste de inserção de cliente passou");
             
@@ -52,6 +67,7 @@ namespace ProjetoFinalBD.Testes
 
             clienteInserido.FatorRisco = "Médio";
             clienteInserido.RendaMensal = "5000";
+            
             _clienteDAO.Update(clienteInserido);
 
             var clienteAtualizado = _clienteDAO.GetByPessoaId(idPessoa);
@@ -67,7 +83,7 @@ namespace ProjetoFinalBD.Testes
 
             _clienteDAO.Delete(clienteAtualizado.Id);
 
-            _pessoaDAO.Delete(idPessoa);
+            //_pessoaDAO.Delete(idPessoa);
 
             var clienteExcluido = _clienteDAO.GetByPessoaId(idPessoa);
 

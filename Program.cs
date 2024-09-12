@@ -24,12 +24,12 @@ class Program
                 //pessoaDAOTeste.RunTests();
                 //#endregion Testes Pessoa
 
-                //#region Testes Cliente
-                //TesteClienteDAO clienteDAOTeste = new TesteClienteDAO();
-                //clienteDAOTeste.RunTests();
-                //#endregion
-                
-                
+                #region Testes Cliente
+                TesteClienteDAO clienteDAOTeste = new TesteClienteDAO();
+                clienteDAOTeste.RunTests();
+                #endregion
+
+
 
             }
             catch (Exception ex)

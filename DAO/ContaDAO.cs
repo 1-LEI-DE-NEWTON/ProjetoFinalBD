@@ -62,72 +62,40 @@ public class ContaDAO : DAOBase
         }
     }
 
-    public Conta GetByClienteId(int id)
+    //Get Contas By ClienteId
+    public List<Conta> GetContasByClienteId(int clienteId)
     {
         using (var connection = GetConnection())
         {
             connection.Open();
 
-            using (var command = connection.CreateCommand())
+            string query = "SELECT * FROM Conta WHERE ClienteId = @ClienteId";
+
+            using (var command = new MySqlCommand(query, connection))
             {
-                command.CommandText = "SELECT * FROM Conta WHERE ClienteId = @ClienteId";
-                command.Parameters.AddWithValue("@ClienteId", id);
+                command.Parameters.AddWithValue("@ClienteId", clienteId);
 
                 using (var reader = command.ExecuteReader())
                 {
-                    if (reader.Read())
+                    List<Conta> contas = new List<Conta>();
+
+                    while (reader.Read())
                     {
-                        return new Conta
+                        contas.Add(new Conta
                         {
                             Id = reader.GetInt32("Id"),
                             Saldo = reader.GetDouble("Saldo"),
                             LimiteNegativo = reader.GetDouble("LimiteNegativo"),
                             ClienteId = reader.GetInt32("ClienteId"),
                             TipoContaId = reader.GetInt32("TipoContaId")
-                        };
+                        });
                     }
-                    else
-                    {
-                        return null;
-                    }
+
+                    return contas;
                 }
             }
         }
-
-    }
-    
-    public Conta GetByTipoContaId(int it)
-    {
-        using (var connection = GetConnection())
-        {
-            connection.Open();
-
-            using (var command = connection.CreateCommand())
-            {
-                command.CommandText = "SELECT * FROM Conta WHERE TipoContaId = @TipoContaId";
-                command.Parameters.AddWithValue("@TipoContaId", it);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return new Conta
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Saldo = reader.GetDouble("Saldo"),
-                            LimiteNegativo = reader.GetDouble("LimiteNegativo"),
-                            ClienteId = reader.GetInt32("ClienteId"),
-                            TipoContaId = reader.GetInt32("TipoContaId")
-                        };
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-        }
-    }
+    }   
     
     public void Update(Conta conta)
     {
@@ -166,5 +134,22 @@ public class ContaDAO : DAOBase
                 command.ExecuteNonQuery();
             }
         }
-    }            
+    }
+    
+    public void DeleteByClienteId(int id)
+    {
+        using (var connection = GetConnection())
+        {
+            connection.Open();
+
+            string query = "DELETE FROM Conta WHERE ClienteId = @ClienteId";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@ClienteId", id);
+
+                command.ExecuteNonQuery();
+            }
+        }
+    }
 }
