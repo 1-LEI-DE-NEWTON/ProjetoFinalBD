@@ -20,7 +20,8 @@ namespace ProjetoFinalBD.DAO
                 {
                     command.CommandText = "INSERT INTO Pessoa (Nome, Cpf) VALUES (@Nome, @Cpf)";
                     command.Parameters.AddWithValue("Nome", pessoa.Nome);
-                    command.Parameters.AddWithValue("Cpf", pessoa.Cpf);
+                    command.Parameters.AddWithValue("Cpf", pessoa.Cpf);                    
+                    
                     command.ExecuteNonQuery();
                 }
             }

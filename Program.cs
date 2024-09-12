@@ -19,10 +19,15 @@ class Program
 
 
 
-                #region Testes Pessoa
-                TestePessoaDAO pessoaDAOTeste = new TestePessoaDAO();
-                pessoaDAOTeste.RunTests();
-                #endregion Testes Pessoa
+                //#region Testes Pessoa
+                //TestePessoaDAO pessoaDAOTeste = new TestePessoaDAO();
+                //pessoaDAOTeste.RunTests();
+                //#endregion Testes Pessoa
+
+                #region Testes Cliente
+                TesteClienteDAO clienteDAOTeste = new TesteClienteDAO();
+                clienteDAOTeste.RunTests();
+                #endregion
 
             }
             catch (Exception ex)

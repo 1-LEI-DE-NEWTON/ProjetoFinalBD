@@ -9,86 +9,166 @@ namespace ProjetoFinalBD.DAO
 {
     public class ClienteDAO : DAOBase
     {
-        public ClienteDAO(string connectionString) : base(connectionString) { }
+        private readonly PessoaDAO pessoaDAO;
+        public ClienteDAO(string connectionString) : base(connectionString)
+        {
+            pessoaDAO = new PessoaDAO(connectionString);
+        }
 
         public void Insert(Cliente cliente)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
-                string query = "INSERT INTO cliente (FatorRisco, RendaMensal, PessoaId) " +
-                    "VALUES (@FatorRisco, @RendaMensal, @PessoaId)";
 
-                using (var command = new MySql.Data.MySqlClient.MySqlCommand(query, connection))
+                var transaction = connection.BeginTransaction();
+                try
                 {
-                    command.Parameters.AddWithValue("@FatorRisco", cliente.FatorRisco);
-                    command.Parameters.AddWithValue("@RendaMensal", cliente.RendaMensal);
-                    command.Parameters.AddWithValue("@PessoaId", cliente.PessoaId);
-                    command.ExecuteNonQuery();
+                    pessoaDAO.Insert(cliente.Pessoa);
+                    
+                    cliente.Pessoa.Id = pessoaDAO.GetByCpf(cliente.Pessoa.Cpf).Id;
+                    
+                    string query = "INSERT INTO cliente (FatorRisco, RendaMensal, PessoaId) " +
+                        "VALUES (@FatorRisco, @RendaMensal, @PessoaId)";
+
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("FatorRisco", cliente.FatorRisco);
+                        command.Parameters.AddWithValue("RendaMensal", cliente.RendaMensal);
+                        command.Parameters.AddWithValue("PessoaId", cliente.Pessoa.Id);
+
+                        command.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
+
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
                 }
             }
         }
-
-        public Cliente GetByCpf(string cpf)
+        public Cliente GetById(int id)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
-                string query = "SELECT * FROM cliente WHERE PessoaId = @PessoaId";
 
-                using (var command = new MySql.Data.MySqlClient.MySqlCommand(query, connection))
+                using (var command = connection.CreateCommand())
                 {
-                    command.Parameters.AddWithValue("@PessoaId", cpf);
+                    command.CommandText = "SELECT * FROM cliente WHERE id = @id";
+                    command.Parameters.AddWithValue("id", id);
+
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
                             return new Cliente
                             {
-                                Id = reader.GetInt32("Id"),
+                                Id = reader.GetInt32("id"),
                                 FatorRisco = reader.GetString("FatorRisco"),
                                 RendaMensal = reader.GetString("RendaMensal"),
-                                PessoaId = reader.GetInt32("PessoaId")
+                                Pessoa = pessoaDAO.GetById(reader.GetInt32("PessoaId"))
                             };
                         }
+                        return null;
                     }
                 }
             }
-            return null;
         }
 
+        public Cliente GetByPessoaId(int id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM cliente WHERE PessoaId = @PessoaId";
+                    command.Parameters.AddWithValue("PessoaId", id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Cliente
+                            {
+                                Id = reader.GetInt32("id"),
+                                FatorRisco = reader.GetString("FatorRisco"),
+                                RendaMensal = reader.GetString("RendaMensal"),
+                                Pessoa = pessoaDAO.GetById(reader.GetInt32("PessoaId"))
+                            };
+                        }
+                        return null;
+                    }
+                }
+            }
+        }
         public void Update(Cliente cliente)
         {
             using (var connection = GetConnection())
             {
-                connection.Open();                                   
-                
-                string query = "UPDATE cliente SET FatorRisco = " +
-                    "@FatorRisco, RendaMensal = @RendaMensal, PessoaId = @PessoaId WHERE Id = @Id";
+                connection.Open();
 
-                using (var command = new MySql.Data.MySqlClient.MySqlCommand(query, connection))
+                var transaction = connection.BeginTransaction();
+                try
                 {
-                    command.Parameters.AddWithValue("@FatorRisco", cliente.FatorRisco);
-                    command.Parameters.AddWithValue("@RendaMensal", cliente.RendaMensal);
-                    command.Parameters.AddWithValue("@id", cliente.Id);
-                    command.ExecuteNonQuery();
+                    pessoaDAO.Update(cliente.Pessoa);
+                    string query = "UPDATE cliente SET FatorRisco = @FatorRisco, RendaMensal = @RendaMensal WHERE id = @id";
+
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("FatorRisco", cliente.FatorRisco);
+                        command.Parameters.AddWithValue("RendaMensal", cliente.RendaMensal);
+                        command.Parameters.AddWithValue("Id", cliente.Id);
+
+                        command.ExecuteNonQuery();
+                    }
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
                 }
             }
         }
-
         public void Delete(int id)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
-                string query = "DELETE FROM cliente WHERE Id = @Id";
-                using (var command = new MySql.Data.MySqlClient.MySqlCommand(query, connection))
+
+                var transaction = connection.BeginTransaction();
+                try
                 {
-                    command.Parameters.AddWithValue("@Id", id);
-                    command.ExecuteNonQuery();
+                    Cliente cliente = GetById(id);
+                    string query = "DELETE FROM cliente WHERE id = @id";
+
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("id", id);
+
+                        command.ExecuteNonQuery();
+                    }
+
+                    pessoaDAO.Delete(cliente.PessoaId);
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
                 }
             }
         }
+
+
+
     }
 }
 
