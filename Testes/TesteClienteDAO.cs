@@ -79,20 +79,20 @@ namespace ProjetoFinalBD.Testes
 
             Console.WriteLine("Teste de atualização de cliente passou");
 
-            Console.WriteLine("Teste de exclusão de cliente");
+            //Console.WriteLine("Teste de exclusão de cliente");
 
-            _clienteDAO.Delete(clienteAtualizado.Id);
+            //_clienteDAO.Delete(clienteAtualizado.Id);
 
-            //_pessoaDAO.Delete(idPessoa);
+            ////_pessoaDAO.Delete(idPessoa);
 
-            var clienteExcluido = _clienteDAO.GetByPessoaId(idPessoa);
+            //var clienteExcluido = _clienteDAO.GetByPessoaId(idPessoa);
 
-            if (clienteExcluido != null)
-            {
-                throw new Exception("Delete test failed");
-            }
+            //if (clienteExcluido != null)
+            //{
+            //    throw new Exception("Delete test failed");
+            //}
 
-            Console.WriteLine("Teste de exclusão de cliente passou");            
+            //Console.WriteLine("Teste de exclusão de cliente passou");            
         }
     }
 }

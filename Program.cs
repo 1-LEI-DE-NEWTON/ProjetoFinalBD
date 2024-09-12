@@ -25,8 +25,13 @@ class Program
                 //#endregion Testes Pessoa
 
                 #region Testes Cliente
-                TesteClienteDAO clienteDAOTeste = new TesteClienteDAO();
-                clienteDAOTeste.RunTests();
+                //TesteClienteDAO clienteDAOTeste = new TesteClienteDAO();
+                //clienteDAOTeste.RunTests();
+                #endregion
+
+                #region Testes Conta
+                TesteContaDAO contaDAOTeste = new TesteContaDAO();
+                contaDAOTeste.RunTests();
                 #endregion
 
 

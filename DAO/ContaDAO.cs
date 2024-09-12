@@ -21,7 +21,7 @@ public class ContaDAO : DAOBase
                 command.Parameters.AddWithValue("@Saldo", conta.Saldo);
                 command.Parameters.AddWithValue("@LimiteNegativo", conta.LimiteNegativo);
                 command.Parameters.AddWithValue("@ClienteId", conta.ClienteId);
-                command.Parameters.AddWithValue("@TipoContaId", conta.TipoContaId);
+                command.Parameters.AddWithValue("@TipoContaId", conta.TipoConta.Id);
 
                 command.ExecuteNonQuery();
             }            
