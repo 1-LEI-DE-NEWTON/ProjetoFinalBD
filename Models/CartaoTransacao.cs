@@ -16,6 +16,6 @@ namespace ProjetoFinalBD.Models
         public string NomeCartao { get; set; }
         public string TipoTransacao { get; set; } // debito/credito
         public bool IsInternacional { get; set; }
-        public int BandeiraCartaoId { get; set; } // Foreign Key para BandeiraCartao
+        public int? BandeiraCartaoId { get; set; } // Foreign Key para BandeiraCartao
     }
 }

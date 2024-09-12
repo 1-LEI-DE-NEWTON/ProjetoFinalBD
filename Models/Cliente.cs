@@ -11,6 +11,6 @@ namespace ProjetoFinalBD.Models
         public int Id { get; set; }
         public string FatorRisco { get; set; }
         public string RendaMensal { get; set; }
-        public int PessoaId { get; set; } // Foreign Key para Pessoa
+        public int? PessoaId { get; set; } // Foreign Key para Pessoa
     }
 }

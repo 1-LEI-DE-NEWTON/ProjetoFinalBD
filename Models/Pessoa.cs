@@ -11,5 +11,8 @@ namespace ProjetoFinalBD.Models
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Cpf { get; set; }
+
+        //Relacionamento 1-1 com Cliente
+        public Cliente Cliente { get; set; }
     }
 }

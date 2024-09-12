@@ -11,8 +11,8 @@ namespace ProjetoFinalBD.Models
         public int Id { get; set; }
         public string ValorTotal { get; set; }
         public DateTime DataPagamento { get; set; }
-        public int FaturaCartaoId { get; set; } // Foreign Key para FaturaCartao
+        public int? FaturaCartaoId { get; set; } // Foreign Key para FaturaCartao
         public string ValorParcial { get; set; }
-        public int BoletoCustomizadoId { get; set; } // Foreign Key para BoletoCustomizado
+        public int? BoletoCustomizadoId { get; set; } // Foreign Key para BoletoCustomizado
     }
 }

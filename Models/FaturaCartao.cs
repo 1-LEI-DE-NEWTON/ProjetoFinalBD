@@ -12,7 +12,7 @@ namespace ProjetoFinalBD.Models
         public string MesReferencia { get; set; }
         public string AnoReferencia { get; set; }
         public string Valor { get; set; }
-        public string DataPagamento { get; set; }
-        public int CartaoCreditoId { get; set; } // Foreign Key para CartaoCredito
+        public string? DataPagamento { get; set; }
+        public int? CartaoCreditoId { get; set; } // Foreign Key para CartaoCredito
     }
 }

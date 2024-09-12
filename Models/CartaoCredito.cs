@@ -9,8 +9,9 @@ namespace ProjetoFinalBD.Models
     public class CartaoCredito
     {
         public int Id { get; set; }
-        public DateTime DataFechamento { get; set; }
-        public int ContaId { get; set; } // Foreign Key para Conta
-        public int CategoriaCartaoId { get; set; } // Foreign Key para CategoriaCartao
+        public string DataFechamento { get; set; }
+        public int? ContaId { get; set; } // Foreign Key para Conta
+        public int? CategoriaCartaoId { get; set; } // Foreign Key para CategoriaCartao
+        public double LimiteCredito { get; set; }
     }
 }

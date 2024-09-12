@@ -11,7 +11,7 @@ namespace ProjetoFinalBD.Models
         public int Id { get; set; }
         public double Saldo { get; set; }
         public double LimiteNegativo { get; set; }
-        public int ClienteId { get; set; } // Foreign Key para Cliente
-        public int TipoContaId { get; set; } // Foreign Key para TipoConta
+        public int? ClienteId { get; set; } // Foreign Key para Cliente
+        public int? TipoContaId { get; set; } // Foreign Key para TipoConta
     }
 }
