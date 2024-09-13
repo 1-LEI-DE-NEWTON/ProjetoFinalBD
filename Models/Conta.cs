@@ -16,7 +16,7 @@ namespace ProjetoFinalBD.Models
         public Cliente Cliente { get; set; }
 
         // Foreign Key para TipoConta
-        public int? TipoContaId { get; set; }
+        public int TipoContaId { get; set; }
         public TipoConta TipoConta { get; set; }
 
         // Relacionamento 1-N com MovimentacaoConta

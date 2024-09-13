@@ -15,7 +15,7 @@ namespace ProjetoFinalBD.DAO
         public ClienteDAO(string connectionString) : base(connectionString)
         {
             pessoaDAO = new PessoaDAO(connectionString);
-            contaDAO = new ContaDAO(connectionString);            
+            contaDAO = new ContaDAO(connectionString);
         }
 
         public void Insert(Cliente cliente)
@@ -29,9 +29,9 @@ namespace ProjetoFinalBD.DAO
                 {
                     //Adiciona pessoa
                     pessoaDAO.Insert(cliente.Pessoa);
-                    
+
                     cliente.Pessoa.Id = pessoaDAO.GetByCpf(cliente.Pessoa.Cpf).Id;
-                    
+
                     //Adiciona cliente                    
                     string query = "INSERT INTO cliente (FatorRisco, RendaMensal, PessoaId) " +
                         "VALUES (@FatorRisco, @RendaMensal, @PessoaId)";
@@ -63,11 +63,11 @@ namespace ProjetoFinalBD.DAO
                             command.Parameters.AddWithValue("TipoContaId", conta.TipoConta.Id);
 
                             command.ExecuteNonQuery();
-                        }                        
+                        }
                     }
 
                     //Adiciona TipoConta
-                    
+
                     foreach (var conta in cliente.Contas)
                     {
                         string insertTipoContaQuery = "INSERT INTO TipoConta (Descricao) " +
@@ -112,11 +112,11 @@ namespace ProjetoFinalBD.DAO
                                 Id = reader.GetInt32("id"),
                                 FatorRisco = reader.GetString("FatorRisco"),
                                 RendaMensal = reader.GetString("RendaMensal"),
-                                
+
                                 Pessoa = pessoaDAO.GetById(reader.GetInt32("PessoaId")),
 
                                 Contas = contaDAO.GetContasByClienteId(reader.GetInt32("id"))
-                            };                                                        
+                            };
                         }
                         return null;
                     }
@@ -128,7 +128,7 @@ namespace ProjetoFinalBD.DAO
         {
 
             Cliente cliente = null;
-                
+
             using (var connection = GetConnection())
             {
                 connection.Open();
@@ -153,33 +153,60 @@ namespace ProjetoFinalBD.DAO
                                 //Retorna as contas
                                 Contas = new List<Conta>()
                             };
-                        }                        
+                        }
                     }
 
                     //Nova query para contas
                     command.CommandText = "SELECT * FROM conta WHERE ClienteId = @ClienteId";
+                    command.Parameters.Clear();
                     command.Parameters.AddWithValue("ClienteId", cliente.Id);
+                    var contas = new List<Conta>();
+                    var tipoContaIds = new Dictionary<int, Conta>();
 
                     using (var contasReader = command.ExecuteReader())
                     {
                         while (contasReader.Read())
                         {
-                            cliente.Contas.Add(new Conta
+                            var conta = new Conta
                             {
                                 Id = contasReader.GetInt32("id"),
                                 Saldo = contasReader.GetDouble("Saldo"),
                                 LimiteNegativo = contasReader.GetDouble("LimiteNegativo"),
-                                TipoConta = new TipoConta
-                                {
-                                    Id = contasReader.GetInt32("TipoContaId")
-                                }
-                            });
+                                TipoConta = new TipoConta()
+                            };
+
+                            var tipoContaId = contasReader.GetInt32("TipoContaId");
+                            tipoContaIds[tipoContaId] = conta;
+
+                            contas.Add(conta);
                         }
                     }
+
+                    // Fechar o DataReader antes de abrir um novo
+                    foreach (var tipoContaId in tipoContaIds.Keys)
+                    {
+                        using (var tipoContaCommand = connection.CreateCommand())
+                        {
+                            tipoContaCommand.CommandText = "SELECT * FROM TipoConta WHERE id = @id";
+                            tipoContaCommand.Parameters.AddWithValue("id", tipoContaId);
+
+                            using (var tipoContaReader = tipoContaCommand.ExecuteReader())
+                            {
+                                if (tipoContaReader.Read())
+                                {
+                                    var conta = tipoContaIds[tipoContaId];
+                                    conta.TipoConta.Id = tipoContaReader.GetInt32("id");
+                                    conta.TipoConta.Descricao = tipoContaReader.GetString("Descricao");
+                                }
+                            }
+                        }
+                    }
+
+                    cliente.Contas.AddRange(contas);
                 }
             }
             return cliente;
-        }
+        }   
         public void Update(Cliente cliente)
         {
             using (var connection = GetConnection())
@@ -209,21 +236,7 @@ namespace ProjetoFinalBD.DAO
                     foreach (var conta in cliente.Contas)
                     {
 
-                        contaDAO.Update(conta);
-                        
-                        //string updateContaQuery = "UPDATE conta SET Saldo = @Saldo, LimiteNegativo = @LimiteNegativo, " +
-                        //    "TipoContaId = @TipoContaId WHERE id = @id";
-
-                        //using (var command = connection.CreateCommand())
-                        //{
-                        //    command.CommandText = updateContaQuery;
-                        //    command.Parameters.AddWithValue("Saldo", conta.Saldo);
-                        //    command.Parameters.AddWithValue("LimiteNegativo", conta.LimiteNegativo);
-                        //    command.Parameters.AddWithValue("TipoContaId", conta.TipoConta.Id);
-                        //    command.Parameters.AddWithValue("Id", conta.Id);
-
-                        //    command.ExecuteNonQuery();
-                        //}
+                        contaDAO.Update(conta);                                                
                     }
 
                     transaction.Commit();

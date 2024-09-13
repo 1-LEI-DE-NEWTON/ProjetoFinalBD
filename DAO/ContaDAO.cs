@@ -6,10 +6,12 @@ namespace ProjetoFinalBD.DAO;
 public class ContaDAO : DAOBase
 {
     private readonly ReservaDAO reservaDAO;
+    private readonly TipoContaDAO tipoContaDAO;
     
     public ContaDAO(string connectionString) : base(connectionString) 
     {
         reservaDAO = new ReservaDAO(connectionString);
+        tipoContaDAO = new TipoContaDAO(connectionString);
     }
 
     public void Insert(Conta conta)
@@ -78,7 +80,7 @@ public class ContaDAO : DAOBase
                             Saldo = reader.GetDouble("Saldo"),
                             LimiteNegativo = reader.GetDouble("LimiteNegativo"),
                             ClienteId = reader.IsDBNull(reader.GetOrdinal("ClienteId")) ? (int?)null : reader.GetInt32("ClienteId"),
-                            TipoContaId = reader.IsDBNull(reader.GetOrdinal("TipoContaId")) ? (int?)null : reader.GetInt32("TipoContaId")
+                            TipoContaId = reader.GetInt32("TipoContaId")
                         };
                     }
                     else
@@ -132,17 +134,39 @@ public class ContaDAO : DAOBase
             
             string query = "UPDATE Conta SET Saldo = @Saldo, LimiteNegativo = @LimiteNegativo," +
                 " ClienteId = @ClienteId, TipoContaId = @TipoContaId WHERE Id = @Id";
-            
-            using (var command = new MySqlCommand(query, connection))
+
+            var transaction = connection.BeginTransaction();
+
+            try
             {
-                command.Parameters.AddWithValue("@Id", conta.Id);
-                command.Parameters.AddWithValue("@Saldo", conta.Saldo);
-                command.Parameters.AddWithValue("@LimiteNegativo", conta.LimiteNegativo);
-                command.Parameters.AddWithValue("@ClienteId", conta.ClienteId);
-                command.Parameters.AddWithValue("@TipoContaId", conta.TipoContaId);
-                
-                command.ExecuteNonQuery();
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", conta.Id);
+                    command.Parameters.AddWithValue("@Saldo", conta.Saldo);
+                    command.Parameters.AddWithValue("@LimiteNegativo", conta.LimiteNegativo);
+                    command.Parameters.AddWithValue("@ClienteId", conta.ClienteId);
+                    command.Parameters.AddWithValue("@TipoContaId", conta.TipoContaId);
+
+                    command.ExecuteNonQuery();
+                }
+
+                //query = "UPDATE TipoConta SET Descricao = @Descricao WHERE Id = @Id";
+
+                //using (var command = new MySqlCommand(query, connection))
+                //{
+                //    command.Parameters.AddWithValue("@Id", conta.TipoContaId);
+                //    command.Parameters.AddWithValue("@Descricao", conta.TipoConta.Descricao);
+
+                //    command.ExecuteNonQuery();
+                //}
+
+                transaction.Commit();
             }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }                                    
         }
     }
     
@@ -153,7 +177,7 @@ public class ContaDAO : DAOBase
             connection.Open();
 
             //Deletar reservas
-            var contas = GetContasByClienteId(id);
+            var contas = GetContasByClienteId(id); // nao vai funcionar
 
             reservaDAO.DeleteByContaId(contas);
 
@@ -173,10 +197,10 @@ public class ContaDAO : DAOBase
         using (var connection = GetConnection())
         {
             connection.Open();
-
-            //Deletar reservas
+            
             var contas = GetContasByClienteId(id);
 
+            //Deletar reservas
             reservaDAO.DeleteByContaId(contas);
 
             //Deletar contas
@@ -188,6 +212,13 @@ public class ContaDAO : DAOBase
                 command.Parameters.AddWithValue("@ClienteId", id);
 
                 command.ExecuteNonQuery();
+            }
+
+            //Deletar tipo conta das contas associadas            
+
+            foreach (var conta in contas)
+            {
+                tipoContaDAO.Delete(conta.TipoContaId); //Puxando Id errado
             }
         }
     }

@@ -49,11 +49,11 @@ namespace ProjetoFinalBD.Testes
                 Contas = new List<Conta> { conta }
             };
 
-            clienteDAO.Insert(cliente);
+            clienteDAO.Insert(cliente); //ATE AQUI INSERE NORMAL
 
             var idPessoa = pessoaDAO.GetByCpf(cliente.Pessoa.Cpf).Id;
 
-            var clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
+            var clienteInserido = clienteDAO.GetByPessoaId(idPessoa);  //Não está retornando o TipoConta
 
             //Adicionar uma nova conta a um cliente existente
 
