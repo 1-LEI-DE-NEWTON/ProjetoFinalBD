@@ -7,7 +7,10 @@ public class ContaDAO : DAOBase
 {
     private readonly ReservaDAO reservaDAO;
     
-    public ContaDAO(string connectionString) : base(connectionString) { }
+    public ContaDAO(string connectionString) : base(connectionString) 
+    {
+        reservaDAO = new ReservaDAO(connectionString);
+    }
 
     public void Insert(Conta conta)
     {
