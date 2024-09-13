@@ -5,6 +5,8 @@ using MySql.Data.MySqlClient;
 namespace ProjetoFinalBD.DAO;
 public class ContaDAO : DAOBase
 {
+    private readonly ReservaDAO reservaDAO;
+    
     public ContaDAO(string connectionString) : base(connectionString) { }
 
     public void Insert(Conta conta)
@@ -164,8 +166,12 @@ public class ContaDAO : DAOBase
         {
             connection.Open();
 
-            //Deletar reservas            
+            //Deletar reservas
+            var contas = GetContasByClienteId(id);
 
+            reservaDAO.DeleteByContaId(contas);
+
+            //Deletar contas
 
             string query = "DELETE FROM Conta WHERE ClienteId = @ClienteId";
 

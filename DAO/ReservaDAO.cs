@@ -110,47 +110,96 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
-        public void DeleteByContaId(int id)
+        //Função DeleteByContaId, que recebe uma lista de contas e deleta todas as reservas e movimentações associadas a elas
+                
+        public void DeleteByContaId(List<Conta> contas)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
-                
                 var transaction = connection.BeginTransaction();
-                
+        
                 try
                 {
-                    //Deletar movimentações
-                    string deleteMovimentacaoQuery = "DELETE FROM movimentacaoReserva WHERE ReservaId IN " +
-                        "(SELECT Id FROM Reserva WHERE ContaId = @ContaId)";
-
-                    using (var command = connection.CreateCommand())
+                    foreach (var conta in contas)
                     {
-                        command.CommandText = deleteMovimentacaoQuery;
-                        command.Parameters.AddWithValue("ContaId", id);
-
-                        command.ExecuteNonQuery();
+                        // Deletar movimentações
+                        string deleteMovimentacaoQuery = "DELETE FROM movimentacaoReserva WHERE ReservaId IN " +
+                            "(SELECT Id FROM Reserva WHERE ContaId = @ContaId)";
+        
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = deleteMovimentacaoQuery;
+                            command.Parameters.AddWithValue("ContaId", conta.Id);
+                            command.Transaction = transaction;
+        
+                            command.ExecuteNonQuery();
+                        }
+        
+                        // Deletar reservas
+                        string deleteReservaQuery = "DELETE FROM Reserva WHERE ContaId = @ContaId";
+        
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = deleteReservaQuery;
+                            command.Parameters.AddWithValue("ContaId", conta.Id);
+                            command.Transaction = transaction;
+        
+                            command.ExecuteNonQuery();
+                        }
                     }
-
-                    //Deletar reserva
-                    string deleteReservaQuery = "DELETE FROM Reserva WHERE ContaId = @ContaId";
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = deleteReservaQuery;
-                        command.Parameters.AddWithValue("ContaId", id);
-
-                        command.ExecuteNonQuery();
-                    }
-
+        
                     transaction.Commit();
                 }
-                catch
+                catch (Exception)
                 {
                     transaction.Rollback();
                     throw;
                 }
             }
         }
+        
+        //public void DeleteByContaId(int id)
+        //{
+        //    using (var connection = GetConnection())
+        //    {
+        //        connection.Open();
+                
+        //        var transaction = connection.BeginTransaction();
+                
+        //        try
+        //        {
+        //            //Deletar movimentações
+        //            string deleteMovimentacaoQuery = "DELETE FROM movimentacaoReserva WHERE ReservaId IN " +
+        //                "(SELECT Id FROM Reserva WHERE ContaId = @ContaId)";
+
+        //            using (var command = connection.CreateCommand())
+        //            {
+        //                command.CommandText = deleteMovimentacaoQuery;
+        //                command.Parameters.AddWithValue("ContaId", id);
+
+        //                command.ExecuteNonQuery();
+        //            }
+
+        //            //Deletar reserva
+        //            string deleteReservaQuery = "DELETE FROM Reserva WHERE ContaId = @ContaId";
+        //            using (var command = connection.CreateCommand())
+        //            {
+        //                command.CommandText = deleteReservaQuery;
+        //                command.Parameters.AddWithValue("ContaId", id);
+
+        //                command.ExecuteNonQuery();
+        //            }
+
+        //            transaction.Commit();
+        //        }
+        //        catch
+        //        {
+        //            transaction.Rollback();
+        //            throw;
+        //        }
+        //    }
+        //}
 
         public Reserva GetById(int id)
         {

@@ -106,9 +106,10 @@ namespace ProjetoFinalBD.Testes
             reservaDAO.Insert(reserva1);
 
             var reservaInserida = reservaDAO.GetbyContaId(clienteInserido.Contas[0].Id);
-            
-            
 
+            //Deleta tudo
+            reservaDAO.Delete(reservaInserida.Id);
+            
         }
     }
 }
