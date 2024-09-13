@@ -13,6 +13,7 @@ namespace ProjetoFinalBD.Testes
         private readonly ContaDAO contaDAO;
         private readonly ClienteDAO clienteDAO;
         private readonly PessoaDAO pessoaDAO;
+        private readonly ReservaDAO reservaDAO;
 
 
         public TesteContaDAO()
@@ -22,6 +23,7 @@ namespace ProjetoFinalBD.Testes
             contaDAO = new ContaDAO(connectionString);
             clienteDAO = new ClienteDAO(connectionString);
             pessoaDAO = new PessoaDAO(connectionString);
+            reservaDAO = new ReservaDAO(connectionString);
         }        
 
         public void RunTests()
@@ -77,7 +79,36 @@ namespace ProjetoFinalBD.Testes
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
             clienteDAO.Update(clienteInserido);
+
+            //Cria reservas para conta 1
+
+            var reserva1 = new Reserva
+            {
+                Id = 1,
+                Saldo = 100,
+                Taxa = 0.1,
+                ReservaCol = "Reserva 1",
+                ContaId = clienteInserido.Contas[0].Id,
+                MovimentacoesReserva = new List<MovimentacaoReserva>
+                {
+                    new MovimentacaoReserva
+                    {
+                        Id = 1,
+                        DataMovimentacao = DateTime.Now,
+                        Valor = 0,
+                        TipoMovimentacao = "Reserva",
+                        ReservaId = 1
+                    }
+                }
+            };
+
+            //Insere a reserva para conta 1 // OK
+            reservaDAO.Insert(reserva1);
+
+            var reservaInserida = reservaDAO.GetbyContaId(clienteInserido.Contas[0].Id);
             
+            
+
         }
     }
 }

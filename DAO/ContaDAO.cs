@@ -164,6 +164,9 @@ public class ContaDAO : DAOBase
         {
             connection.Open();
 
+            //Deletar reservas            
+
+
             string query = "DELETE FROM Conta WHERE ClienteId = @ClienteId";
 
             using (var command = new MySqlCommand(query, connection))

@@ -31,8 +31,8 @@ class Program
                 #endregion
 
                 #region Testes Conta
-                //TesteContaDAO contaDAOTeste = new TesteContaDAO();
-                //contaDAOTeste.RunTests();
+                TesteContaDAO contaDAOTeste = new TesteContaDAO();
+                contaDAOTeste.RunTests();
                 #endregion
 
                 #endregion Testes
