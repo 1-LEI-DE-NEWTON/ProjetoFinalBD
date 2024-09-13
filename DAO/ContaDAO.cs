@@ -151,7 +151,12 @@ public class ContaDAO : DAOBase
         using (var connection = GetConnection())
         {
             connection.Open();
-            
+
+            //Deletar reservas
+            var contas = GetContasByClienteId(id);
+
+            reservaDAO.DeleteByContaId(contas);
+
             string query = "DELETE FROM Conta WHERE Id = @Id";
             
             using (var command = new MySqlCommand(query, connection))

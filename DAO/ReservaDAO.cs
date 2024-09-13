@@ -157,49 +157,7 @@ namespace ProjetoFinalBD.DAO
                     throw;
                 }
             }
-        }
-        
-        //public void DeleteByContaId(int id)
-        //{
-        //    using (var connection = GetConnection())
-        //    {
-        //        connection.Open();
-                
-        //        var transaction = connection.BeginTransaction();
-                
-        //        try
-        //        {
-        //            //Deletar movimentações
-        //            string deleteMovimentacaoQuery = "DELETE FROM movimentacaoReserva WHERE ReservaId IN " +
-        //                "(SELECT Id FROM Reserva WHERE ContaId = @ContaId)";
-
-        //            using (var command = connection.CreateCommand())
-        //            {
-        //                command.CommandText = deleteMovimentacaoQuery;
-        //                command.Parameters.AddWithValue("ContaId", id);
-
-        //                command.ExecuteNonQuery();
-        //            }
-
-        //            //Deletar reserva
-        //            string deleteReservaQuery = "DELETE FROM Reserva WHERE ContaId = @ContaId";
-        //            using (var command = connection.CreateCommand())
-        //            {
-        //                command.CommandText = deleteReservaQuery;
-        //                command.Parameters.AddWithValue("ContaId", id);
-
-        //                command.ExecuteNonQuery();
-        //            }
-
-        //            transaction.Commit();
-        //        }
-        //        catch
-        //        {
-        //            transaction.Rollback();
-        //            throw;
-        //        }
-        //    }
-        //}
+        }                
 
         public Reserva GetById(int id)
         {
