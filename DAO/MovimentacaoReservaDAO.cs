@@ -18,7 +18,8 @@ namespace ProjetoFinalBD.DAO
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "INSERT INTO MovimentacaoReserva (DataMovimentacao, Valor, TipoMovimentacao, ReservaId) VALUES (@DataMovimentacao, @Valor, @TipoMovimentacao, @ReservaId)";
+                    command.CommandText = "INSERT INTO MovimentacaoReserva (DataMovimentacao, Valor, TipoMovimentacao, ReservaId) " +
+                        "VALUES (@DataMovimentacao, @Valor, @TipoMovimentacao, @ReservaId)";
                     command.Parameters.AddWithValue("DataMovimentacao", movimentacaoReserva.DataMovimentacao);
                     command.Parameters.AddWithValue("Valor", movimentacaoReserva.Valor);
                     command.Parameters.AddWithValue("TipoMovimentacao", movimentacaoReserva.TipoMovimentacao);
@@ -112,6 +113,39 @@ namespace ProjetoFinalBD.DAO
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        public MovimentacaoReserva GetById(int id)
+        {
+            MovimentacaoReserva movimentacaoReserva = null;
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM MovimentacaoReserva WHERE Id = @Id";
+                    command.Parameters.AddWithValue("Id", id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            movimentacaoReserva = new MovimentacaoReserva
+                            {
+                                Id = reader.GetInt32("Id"),
+                                DataMovimentacao = reader.GetDateTime("DataMovimentacao"),
+                                Valor = reader.GetDouble("Valor"),
+                                TipoMovimentacao = reader.GetString("TipoMovimentacao"),
+                                ReservaId = reader.GetInt32("ReservaId")
+                            };
+                        }
+                    }
+                }
+            }
+
+            return movimentacaoReserva;
         }
     }    
 }

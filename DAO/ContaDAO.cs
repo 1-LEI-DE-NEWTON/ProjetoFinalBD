@@ -41,7 +41,9 @@ public class ContaDAO : DAOBase
                     command.Parameters.AddWithValue("@TipoContaId", conta.TipoConta.Id);
 
                     command.ExecuteNonQuery();
-                }                                
+                }
+                
+                
 
                 transaction.Commit();
             }
