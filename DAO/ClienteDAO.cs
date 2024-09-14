@@ -51,43 +51,12 @@ namespace ProjetoFinalBD.DAO
 
                     cliente.Id = GetByPessoaId(cliente.Pessoa.Id).Id;
 
-                    //Adiciona TipoConta
-                    foreach (var conta in cliente.Contas)
-                    {
-                        int tipoContaCounter = 0;
-
-                        string insertTipoContaQuery = "INSERT INTO TipoConta (Descricao) " +
-                            "VALUES (@Descricao)";
-
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = insertTipoContaQuery;
-                            command.Parameters.AddWithValue("Descricao", conta.TipoConta.Descricao);
-
-                            command.ExecuteNonQuery();
-                        }
-
-                        //Obtem o tipoContaId pela ultima TipoConta adicionada
-                        cliente.Contas[tipoContaCounter].TipoConta.Id = tipoContaDAO.GetByLastAdded().Id;
-                    }                    
-
                     //Adiciona contas
                     foreach (var conta in cliente.Contas)
                     {
-                        string insertContaQuery = "INSERT INTO conta (Saldo, LimiteNegativo, ClienteId, TipoContaId) " +
-                            "VALUES (@Saldo, @LimiteNegativo, @ClienteId, @TipoContaId)";
-
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = insertContaQuery;
-                            command.Parameters.AddWithValue("Saldo", conta.Saldo);
-                            command.Parameters.AddWithValue("LimiteNegativo", conta.LimiteNegativo);
-                            command.Parameters.AddWithValue("ClienteId", cliente.Id);
-                            command.Parameters.AddWithValue("TipoContaId", conta.TipoConta.Id);
-
-                            command.ExecuteNonQuery();
-                        }
-                    }                    
+                        conta.ClienteId = cliente.Id;
+                        contaDAO.Insert(conta);                                          
+                    }                   
 
                     transaction.Commit();
 

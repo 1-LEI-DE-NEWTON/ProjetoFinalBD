@@ -32,7 +32,6 @@ public class ContaDAO : DAOBase
                 //Obtem o tipoContaId pela ultima TipoConta adicionada
                 conta.TipoConta.Id = tipoContaDAO.GetByLastAdded().Id;
 
-
                 //Adiciona conta
                 using (var command = new MySqlCommand(query, connection))
                 {
