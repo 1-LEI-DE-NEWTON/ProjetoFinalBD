@@ -75,7 +75,7 @@ public class ContaDAO : DAOBase
                             Id = reader.GetInt32("Id"),
                             Saldo = reader.GetDouble("Saldo"),
                             LimiteNegativo = reader.GetDouble("LimiteNegativo"),
-                            ClienteId = reader.IsDBNull(reader.GetOrdinal("ClienteId")) ? (int?)null : reader.GetInt32("ClienteId"),
+                            ClienteId = reader.GetInt32("ClienteId"),
                             TipoContaId = reader.GetInt32("TipoContaId")
                         };
                     }
@@ -160,7 +160,7 @@ public class ContaDAO : DAOBase
         }
     }
     
-    public void Delete(int id)
+    public void Delete(int id) //Necessario atualizar
     {
         using (var connection = GetConnection())
         {
@@ -203,7 +203,7 @@ public class ContaDAO : DAOBase
                 command.ExecuteNonQuery();
             }
 
-            //Deletar tipo conta das contas associadas            
+            //Deletar tipoConta das contas associadas            
             foreach (var conta in contas)
             {
                 tipoContaDAO.Delete(conta.TipoContaId);
