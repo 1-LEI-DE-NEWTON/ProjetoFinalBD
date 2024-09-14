@@ -133,6 +133,10 @@ public class ContaDAO : DAOBase
 
             var transaction = connection.BeginTransaction();
 
+            //Atualiza o tipoConta
+            conta.TipoConta = tipoContaDAO.GetById(conta.TipoContaId);
+            tipoContaDAO.Update(conta.TipoConta);            
+
             try
             {
                 using (var command = new MySqlCommand(query, connection))

@@ -132,53 +132,18 @@ namespace ProjetoFinalBD.DAO
                         }
                     }
 
-                    //Nova query para contas
-                    command.CommandText = "SELECT * FROM conta WHERE ClienteId = @ClienteId";
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("ClienteId", cliente.Id);
-                    var contas = new List<Conta>();
-                    var tipoContaIds = new Dictionary<int, Conta>();
-
-                    using (var contasReader = command.ExecuteReader())
+                    if (cliente != null)
                     {
-                        while (contasReader.Read())
+                        cliente.Contas = contaDAO.GetContasByClienteId(cliente.Id);
+
+                        if (cliente.Contas.Count > 0)
                         {
-                            var conta = new Conta
+                            foreach (var conta in cliente.Contas)
                             {
-                                Id = contasReader.GetInt32("id"),
-                                Saldo = contasReader.GetDouble("Saldo"),
-                                LimiteNegativo = contasReader.GetDouble("LimiteNegativo"),
-                                TipoConta = new TipoConta()
-                            };
-
-                            var tipoContaId = contasReader.GetInt32("TipoContaId");
-                            tipoContaIds[tipoContaId] = conta;
-
-                            contas.Add(conta);
-                        }
-                    }
-
-                    // Fechar o DataReader antes de abrir um novo
-                    foreach (var tipoContaId in tipoContaIds.Keys)
-                    {
-                        using (var tipoContaCommand = connection.CreateCommand())
-                        {
-                            tipoContaCommand.CommandText = "SELECT * FROM TipoConta WHERE id = @id";
-                            tipoContaCommand.Parameters.AddWithValue("id", tipoContaId);
-
-                            using (var tipoContaReader = tipoContaCommand.ExecuteReader())
-                            {
-                                if (tipoContaReader.Read())
-                                {
-                                    var conta = tipoContaIds[tipoContaId];
-                                    conta.TipoConta.Id = tipoContaReader.GetInt32("id");
-                                    conta.TipoConta.Descricao = tipoContaReader.GetString("Descricao");
-                                }
+                                conta.TipoConta = tipoContaDAO.GetById(conta.TipoContaId);
                             }
                         }
                     }
-
-                    cliente.Contas.AddRange(contas);
                 }
             }
             return cliente;
@@ -213,14 +178,7 @@ namespace ProjetoFinalBD.DAO
                     {
 
                         contaDAO.Update(conta);                                                
-                    }
-
-                    //Atualiza tipoConta
-                    foreach (var conta in cliente.Contas)
-                    {
-                        conta.TipoConta = tipoContaDAO.GetById(conta.TipoContaId);
-                        tipoContaDAO.Update(conta.TipoConta);
-                    }
+                    }                    
 
                     transaction.Commit();
                 }
