@@ -92,6 +92,33 @@ namespace ProjetoFinalBD.DAO
             return null;
         }
 
+        public TipoConta GetByLastAdded()
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT Id, Descricao FROM TipoConta ORDER BY Id DESC LIMIT 1";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new TipoConta
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Descricao = reader.GetString(reader.GetOrdinal("Descricao"))
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public List<TipoConta> GetAll()
         {
             var tiposConta = new List<TipoConta>();

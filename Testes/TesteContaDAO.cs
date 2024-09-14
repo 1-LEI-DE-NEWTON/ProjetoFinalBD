@@ -53,7 +53,7 @@ namespace ProjetoFinalBD.Testes
 
             var idPessoa = pessoaDAO.GetByCpf(cliente.Pessoa.Cpf).Id;
 
-            var clienteInserido = clienteDAO.GetByPessoaId(idPessoa);  //Não está retornando o TipoConta
+            var clienteInserido = clienteDAO.GetByPessoaId(idPessoa);  //OK
 
             //Adicionar uma nova conta a um cliente existente
 

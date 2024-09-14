@@ -12,10 +12,13 @@ namespace ProjetoFinalBD.DAO
     {
         private readonly PessoaDAO pessoaDAO;
         private readonly ContaDAO contaDAO;
+        private readonly TipoContaDAO tipoContaDAO;
         public ClienteDAO(string connectionString) : base(connectionString)
         {
             pessoaDAO = new PessoaDAO(connectionString);
+            tipoContaDAO = new TipoContaDAO(connectionString);
             contaDAO = new ContaDAO(connectionString);
+            
         }
 
         public void Insert(Cliente cliente)
@@ -48,6 +51,26 @@ namespace ProjetoFinalBD.DAO
 
                     cliente.Id = GetByPessoaId(cliente.Pessoa.Id).Id;
 
+                    //Adiciona TipoConta
+                    foreach (var conta in cliente.Contas)
+                    {
+                        int tipoContaCounter = 0;
+
+                        string insertTipoContaQuery = "INSERT INTO TipoConta (Descricao) " +
+                            "VALUES (@Descricao)";
+
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandText = insertTipoContaQuery;
+                            command.Parameters.AddWithValue("Descricao", conta.TipoConta.Descricao);
+
+                            command.ExecuteNonQuery();
+                        }
+
+                        //Obtem o tipoContaId pela ultima TipoConta adicionada
+                        cliente.Contas[tipoContaCounter].TipoConta.Id = tipoContaDAO.GetByLastAdded().Id;
+                    }                    
+
                     //Adiciona contas
                     foreach (var conta in cliente.Contas)
                     {
@@ -64,23 +87,7 @@ namespace ProjetoFinalBD.DAO
 
                             command.ExecuteNonQuery();
                         }
-                    }
-
-                    //Adiciona TipoConta
-
-                    foreach (var conta in cliente.Contas)
-                    {
-                        string insertTipoContaQuery = "INSERT INTO TipoConta (Descricao) " +
-                            "VALUES (@Descricao)";
-
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = insertTipoContaQuery;
-                            command.Parameters.AddWithValue("Descricao", conta.TipoConta.Descricao);
-
-                            command.ExecuteNonQuery();
-                        }
-                    }
+                    }                    
 
                     transaction.Commit();
 
@@ -237,6 +244,13 @@ namespace ProjetoFinalBD.DAO
                     {
 
                         contaDAO.Update(conta);                                                
+                    }
+
+                    //Atualiza tipoConta
+                    foreach (var conta in cliente.Contas)
+                    {
+                        conta.TipoConta = tipoContaDAO.GetById(conta.TipoContaId);
+                        tipoContaDAO.Update(conta.TipoConta);
                     }
 
                     transaction.Commit();

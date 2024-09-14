@@ -26,6 +26,13 @@ public class ContaDAO : DAOBase
                 "VALUES (@Saldo, @LimiteNegativo, @ClienteId, @TipoContaId)";
             try
             {
+                //Adiciona tipoConta
+                tipoContaDAO.Insert(conta.TipoConta);
+                
+                //Obtem o tipoContaId pela ultima TipoConta adicionada
+                conta.TipoConta.Id = tipoContaDAO.GetByLastAdded().Id;
+
+
                 //Adiciona conta
                 using (var command = new MySqlCommand(query, connection))
                 {
@@ -35,17 +42,7 @@ public class ContaDAO : DAOBase
                     command.Parameters.AddWithValue("@TipoContaId", conta.TipoConta.Id);
 
                     command.ExecuteNonQuery();
-                }
-
-                //Adiciona TipoConta
-                query = "INSERT INTO TipoConta (Descricao) VALUES (@Descricao)";
-
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Descricao", conta.TipoConta.Descricao);
-
-                    command.ExecuteNonQuery();
-                }
+                }                                
 
                 transaction.Commit();
             }
@@ -150,16 +147,6 @@ public class ContaDAO : DAOBase
                     command.ExecuteNonQuery();
                 }
 
-                //query = "UPDATE TipoConta SET Descricao = @Descricao WHERE Id = @Id";
-
-                //using (var command = new MySqlCommand(query, connection))
-                //{
-                //    command.Parameters.AddWithValue("@Id", conta.TipoContaId);
-                //    command.Parameters.AddWithValue("@Descricao", conta.TipoConta.Descricao);
-
-                //    command.ExecuteNonQuery();
-                //}
-
                 transaction.Commit();
             }
             catch
@@ -204,7 +191,6 @@ public class ContaDAO : DAOBase
             reservaDAO.DeleteByContaId(contas);
 
             //Deletar contas
-
             string query = "DELETE FROM Conta WHERE ClienteId = @ClienteId";
 
             using (var command = new MySqlCommand(query, connection))
@@ -215,10 +201,9 @@ public class ContaDAO : DAOBase
             }
 
             //Deletar tipo conta das contas associadas            
-
             foreach (var conta in contas)
             {
-                tipoContaDAO.Delete(conta.TipoContaId); //Puxando Id errado
+                tipoContaDAO.Delete(conta.TipoContaId);
             }
         }
     }
