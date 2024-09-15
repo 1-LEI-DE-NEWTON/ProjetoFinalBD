@@ -67,7 +67,7 @@ public class ContaDAO : DAOBase
         }
     }
 
-    public Conta GetById(int id)
+    public Conta GetById(int id //Atualizar
     {
         using (var connection = GetConnection())
         {
@@ -131,7 +131,10 @@ public class ContaDAO : DAOBase
                             ClienteId = reader.GetInt32("ClienteId"),
                             TipoContaId = reader.GetInt32("TipoContaId"),
                             TipoConta = tipoContaDAO.GetById(reader.GetInt32("TipoContaId")),
-                            MovimentacoesConta = new List<MovimentacaoConta>()
+                            
+                            MovimentacoesConta = new List<MovimentacaoConta>(),
+
+                            Reservas = new List<Reserva>()
                         });                                                
                     }
 
@@ -140,6 +143,7 @@ public class ContaDAO : DAOBase
                         foreach (var conta in contas)
                         {
                             conta.MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(conta.Id);
+                            conta.Reservas = reservaDAO.GetReservasByContaId(conta.Id);
                         }
                     }
 
