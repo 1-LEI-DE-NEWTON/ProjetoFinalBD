@@ -67,7 +67,7 @@ public class ContaDAO : DAOBase
         }
     }
 
-    public Conta GetById(int id //Atualizar
+    public Conta GetById(int id) //Atualizar
     {
         using (var connection = GetConnection())
         {
@@ -93,7 +93,9 @@ public class ContaDAO : DAOBase
                             
                             TipoConta = tipoContaDAO.GetById(reader.GetInt32("TipoContaId")),
                             
-                            MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(id)                            
+                            MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(id),
+
+                            Reservas = reservaDAO.GetReservasByContaId(id)
                         };
                     }
                     else
