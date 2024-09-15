@@ -74,7 +74,9 @@ namespace ProjetoFinalBD.DAO
                                 DataFechamento = reader.GetString(reader.GetOrdinal("DataFechamento")),
                                 ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
                                 CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
-                                LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito"))
+                                LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito")),
+
+                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")))
                             };
                         }
                     }
@@ -115,10 +117,8 @@ namespace ProjetoFinalBD.DAO
                 }
             }
             return null;
-        }
-
-        //GetCartoesByContaId
-        public List<CartaoCredito> GetCartoesByContaId(int contaId)
+        }        
+        public List<CartaoCredito> GetCartoesCreditoByContaId(int contaId)
         {
             using (var connection = GetConnection())
             {
@@ -143,13 +143,73 @@ namespace ProjetoFinalBD.DAO
                                 DataFechamento = reader.GetString(reader.GetOrdinal("DataFechamento")),
                                 ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
                                 CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
-                                LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito"))
+                                LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito")),
+
+                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")))
                             });
                         }
                         return cartoes;
                     }
                 }
             }
-        }                        
+        }        
+        public void Update(CartaoCredito cartaoCredito)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    //Atualiza a categoria do Cartão de Crédito
+                    cartaoCredito.CategoriaCartao.Id = categoriaCartaoDAO.GetById(cartaoCredito.CategoriaCartaoId).Id;
+                    categoriaCartaoDAO.Update(cartaoCredito.CategoriaCartao);
+
+                    string query = "UPDATE cartaoCredito SET DataFechamento = @DataFechamento, " +
+                        "ContaId = @ContaId, CategoriaCartaoId = @CategoriaCartaoId, " +
+                        "LimiteCredito = @LimiteCredito WHERE Id = @Id";
+
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("DataFechamento", cartaoCredito.DataFechamento);
+                    command.Parameters.AddWithValue("ContaId", cartaoCredito.ContaId);
+                    command.Parameters.AddWithValue("CategoriaCartaoId", cartaoCredito.CategoriaCartaoId);
+                    command.Parameters.AddWithValue("LimiteCredito", cartaoCredito.LimiteCredito);
+                    command.Parameters.AddWithValue("Id", cartaoCredito.Id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void Delete(int id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    string query = "DELETE FROM cartaoCredito WHERE Id = @Id";
+
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("Id", id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteByContaId(int contaId)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    string query = "DELETE FROM cartaoCredito WHERE ContaId = @ContaId";
+
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("ContaId", contaId);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }                
     }
 }

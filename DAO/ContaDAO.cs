@@ -8,12 +8,13 @@ public class ContaDAO : DAOBase
     private readonly ReservaDAO reservaDAO;
     private readonly TipoContaDAO tipoContaDAO;
     private readonly MovimentacaoContaDAO movimentacaoContaDAO;
-
+    private readonly CartaoCreditoDAO cartaoCreditoDAO;
     public ContaDAO(string connectionString) : base(connectionString) 
     {
         reservaDAO = new ReservaDAO(connectionString);
         tipoContaDAO = new TipoContaDAO(connectionString);
         movimentacaoContaDAO = new MovimentacaoContaDAO(connectionString);
+        cartaoCreditoDAO = new CartaoCreditoDAO(connectionString);
     }
 
     public void Insert(Conta conta)
@@ -94,7 +95,9 @@ public class ContaDAO : DAOBase
                             
                             MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(id),
 
-                            Reservas = reservaDAO.GetReservasByContaId(id)
+                            Reservas = reservaDAO.GetReservasByContaId(id),
+
+                            CartoesCredito = cartaoCreditoDAO.GetCartoesCreditoByContaId(id)
                         };
                     }
                     else
@@ -136,7 +139,9 @@ public class ContaDAO : DAOBase
                             
                             MovimentacoesConta = new List<MovimentacaoConta>(),
 
-                            Reservas = new List<Reserva>()
+                            Reservas = new List<Reserva>(),
+
+                            CartoesCredito = new List<CartaoCredito>()
                         });                                                
                     }
 
@@ -146,6 +151,7 @@ public class ContaDAO : DAOBase
                         {
                             conta.MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(conta.Id);
                             conta.Reservas = reservaDAO.GetReservasByContaId(conta.Id);
+                            conta.CartoesCredito = cartaoCreditoDAO.GetCartoesCreditoByContaId(conta.Id);
                         }
                     }
 
@@ -182,7 +188,9 @@ public class ContaDAO : DAOBase
                             
                             MovimentacoesConta = new List<MovimentacaoConta>(),
 
-                            Reservas = new List<Reserva>()
+                            Reservas = new List<Reserva>(),
+
+                            CartoesCredito = new List<CartaoCredito>()
                         };
                     }
 
@@ -190,6 +198,7 @@ public class ContaDAO : DAOBase
                     {
                         conta.MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(conta.Id);
                         conta.Reservas = reservaDAO.GetReservasByContaId(conta.Id);
+                        conta.CartoesCredito = cartaoCreditoDAO.GetCartoesCreditoByContaId(conta.Id);
                     }   
                     else
                     {
@@ -243,6 +252,13 @@ public class ContaDAO : DAOBase
                     reservaDAO.Update(reserva);
                 }
 
+                //Atualiza cartoesCredito
+                foreach (var cartaoCredito in conta.CartoesCredito)
+                {
+                    cartaoCredito.ContaId = conta.Id;
+                    cartaoCreditoDAO.Update(cartaoCredito);
+                }
+
                 transaction.Commit();
             }                                        
             catch
@@ -276,6 +292,9 @@ public class ContaDAO : DAOBase
 
             //Deletar tipoConta
             tipoContaDAO.Delete(GetById(id).TipoContaId);
+
+            //Deletar cartoesCredito
+            cartaoCreditoDAO.DeleteByContaId(id);
         }
     }
     
@@ -313,6 +332,12 @@ public class ContaDAO : DAOBase
             foreach (var conta in contas)
             {
                 movimentacaoContaDAO.DeleteByContaId(conta.Id);
+            }
+
+            //Deletar cartaoCredito das contas associadas
+            foreach (var conta in contas)
+            {
+                cartaoCreditoDAO.DeleteByContaId(conta.Id);
             }
         }
     }
