@@ -67,7 +67,7 @@ public class ContaDAO : DAOBase
         }
     }
 
-    public Conta GetById(int id) //Atualizar
+    public Conta GetById(int id)
     {
         using (var connection = GetConnection())
         {
@@ -185,8 +185,8 @@ public class ContaDAO : DAOBase
                     if (conta != null)
                     {
                         conta.MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(conta.Id);
+                        conta.Reservas = reservaDAO.GetReservasByContaId(conta.Id);
                     }   
-
                     else
                     {
                         return null;
@@ -230,7 +230,14 @@ public class ContaDAO : DAOBase
                 {
                     movimentacaoConta.ContaId = conta.Id;
                     movimentacaoContaDAO.Update(movimentacaoConta);
-                }                
+                }
+
+                //Atualiza reservas
+                foreach (var reserva in conta.Reservas)
+                {
+                    reserva.ContaId = conta.Id;
+                    reservaDAO.Update(reserva);
+                }
 
                 transaction.Commit();
             }                                        
@@ -242,20 +249,14 @@ public class ContaDAO : DAOBase
         }
     }
     
-    public void Delete(int id) //Necessario atualizar
+    public void Delete(int id)
     {
         using (var connection = GetConnection())
         {
-            connection.Open();
+            connection.Open();                        
 
-            //Deletar reservas
-            var clienteId = GetById(id).ClienteId;
-            var contas = GetContasByClienteId(clienteId); 
-
-            foreach (var conta in contas)
-            {
-                reservaDAO.DeleteByContaId(conta.Id);
-            }            
+            //Deleta as reservas associadas a essa conta
+            reservaDAO.DeleteByContaId(id);           
 
             string query = "DELETE FROM Conta WHERE Id = @Id";
             
@@ -265,6 +266,12 @@ public class ContaDAO : DAOBase
                 
                 command.ExecuteNonQuery();
             }
+
+            //Deletar movimentacoesConta
+            movimentacaoContaDAO.DeleteByContaId(id);
+
+            //Deletar tipoConta
+            tipoContaDAO.Delete(GetById(id).TipoContaId);
         }
     }
     
