@@ -44,7 +44,6 @@ public class ContaDAO : DAOBase
 
                     command.ExecuteNonQuery();
                 }
-
                 
                 //Obtem ContaId pela ultima conta adicionada
                 conta.Id = GetLastAdded().Id;

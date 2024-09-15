@@ -137,7 +137,42 @@ namespace ProjetoFinalBD.DAO
                 }
             }
             return cliente;
-        }   
+        }
+
+        public List<Cliente> GetAll()
+        {
+            List<Cliente> clientes = new List<Cliente>();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM cliente";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var cliente = new Cliente
+                            {
+                                Id = reader.GetInt32("id"),
+                                FatorRisco = reader.GetString("FatorRisco"),
+                                RendaMensal = reader.GetString("RendaMensal"),
+
+                                Pessoa = pessoaDAO.GetById(reader.GetInt32("PessoaId")),
+
+                                Contas = contaDAO.GetContasByClienteId(reader.GetInt32("id"))
+                            };
+
+                            clientes.Add(cliente);
+                        }
+                    }
+                }
+            }
+            return clientes;
+        }
         public void Update(Cliente cliente)
         {
             using (var connection = GetConnection())

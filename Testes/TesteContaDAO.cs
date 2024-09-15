@@ -68,7 +68,6 @@ namespace ProjetoFinalBD.Testes
             var clienteInserido = clienteDAO.GetByPessoaId(idPessoa);  //OK
 
             //Adicionar uma nova conta a um cliente existente
-
             var conta2 = new Conta
             {
                 Id = 2,
@@ -97,13 +96,11 @@ namespace ProjetoFinalBD.Testes
             contaDAO.Insert(conta2);
 
             //Atualizar a conta
-
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
             clienteDAO.Update(clienteInserido);
 
             //Cria reservas para conta 1
-
             var reserva1 = new Reserva
             {
                 Id = 1,
@@ -129,12 +126,10 @@ namespace ProjetoFinalBD.Testes
 
             var reservaInserida = reservaDAO.GetReservasByContaId(clienteInserido.Contas[0].Id);
 
-            clienteInserido = clienteDAO.GetByPessoaId(idPessoa); //nao ta puxando as reservas
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
             //Deleta o cliente e suas contas
-            clienteDAO.Delete(clienteInserido.Id);
-            
-
+            clienteDAO.Delete(clienteInserido.Id);            
         }
     }
 }
