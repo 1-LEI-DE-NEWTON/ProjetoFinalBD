@@ -132,6 +132,7 @@ public class ContaDAO : DAOBase
                             LimiteNegativo = reader.GetDouble("LimiteNegativo"),
                             ClienteId = reader.GetInt32("ClienteId"),
                             TipoContaId = reader.GetInt32("TipoContaId"),
+                            
                             TipoConta = tipoContaDAO.GetById(reader.GetInt32("TipoContaId")),
                             
                             MovimentacoesConta = new List<MovimentacaoConta>(),
@@ -177,8 +178,12 @@ public class ContaDAO : DAOBase
                             LimiteNegativo = reader.GetDouble("LimiteNegativo"),
                             ClienteId = reader.GetInt32("ClienteId"),
                             TipoContaId = reader.GetInt32("TipoContaId"),
+                            
                             TipoConta = tipoContaDAO.GetById(reader.GetInt32("TipoContaId")),
-                            MovimentacoesConta = new List<MovimentacaoConta>()
+                            
+                            MovimentacoesConta = new List<MovimentacaoConta>(),
+
+                            Reservas = new List<Reserva>()
                         };
                     }
 
