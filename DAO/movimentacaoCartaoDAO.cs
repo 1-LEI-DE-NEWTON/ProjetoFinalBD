@@ -17,7 +17,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "INSERT INTO movimentacao_cartao (DataMovimentacao, Valor, CartaoId) " +
+                string query = "INSERT INTO movimentacaoCartao (DataMovimentacao, Valor, CartaoId) " +
                     "VALUES (@DataMovimentacao, @Valor, @CartaoId)";
 
                 using (var command = connection.CreateCommand())
@@ -38,7 +38,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "SELECT * FROM movimentacao_cartao WHERE Id = @Id";
+                string query = "SELECT * FROM movimentacaoCartao WHERE Id = @Id";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -70,7 +70,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "SELECT * FROM movimentacao_cartao";
+                string query = "SELECT * FROM movimentacaoCartao";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -91,7 +91,6 @@ namespace ProjetoFinalBD.DAO
                                 TipoMovimentacao = reader.GetString(reader.GetOrdinal("TipoMovimentacao"))
                             });
                         }
-
                         return movimentacoes;
                     }
                 }
@@ -104,7 +103,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "SELECT * FROM movimentacao_cartao WHERE CartaoId = @CartaoId";
+                string query = "SELECT * FROM movimentacaoCartao WHERE CartaoId = @CartaoId";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -126,7 +125,6 @@ namespace ProjetoFinalBD.DAO
                                 TipoMovimentacao = reader.GetString(reader.GetOrdinal("TipoMovimentacao"))
                             });
                         }
-
                         return movimentacoes;
                     }
                 }
@@ -139,7 +137,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "UPDATE movimentacao_cartao SET DataMovimentacao = @DataMovimentacao, " +
+                string query = "UPDATE movimentacaoCartao SET DataMovimentacao = @DataMovimentacao, " +
                     "Valor = @Valor, CartaoId = @CartaoId " +
                     "WHERE Id = @Id";
 
@@ -162,7 +160,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "DELETE FROM movimentacao_cartao WHERE Id = @Id";
+                string query = "DELETE FROM movimentacaoCartao WHERE Id = @Id";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -180,7 +178,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "DELETE FROM movimentacao_cartao WHERE CartaoId = @CartaoId";
+                string query = "DELETE FROM movimentacaoCartao WHERE CartaoId = @CartaoId";
 
                 using (var command = connection.CreateCommand())
                 {
