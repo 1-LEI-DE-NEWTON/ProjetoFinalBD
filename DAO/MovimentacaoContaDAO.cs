@@ -29,7 +29,7 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
-        public List<MovimentacaoConta> GetMovimentacaoContaByContaId(int contaId)
+        public List<MovimentacaoConta> GetMovimentacoesContaByContaId(int contaId)
         {
             List<MovimentacaoConta> movimentacoes = new List<MovimentacaoConta>();
             using (var connection = GetConnection())

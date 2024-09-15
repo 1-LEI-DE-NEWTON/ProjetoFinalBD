@@ -11,7 +11,7 @@ namespace ProjetoFinalBD.DAO
     {
         public ReservaDAO(string connectionString) : base(connectionString) { }
 
-        public void Insert(Reserva reserva)
+        public void Insert(Reserva reserva) //atualizar
         {
             using (var connection = GetConnection())
             {
@@ -70,7 +70,7 @@ namespace ProjetoFinalBD.DAO
             }
         }
         
-        public void Delete(int id)
+        public void Delete(int id) //atualizar
         {
             using (var connection = GetConnection())
             {
@@ -112,7 +112,7 @@ namespace ProjetoFinalBD.DAO
 
         //Função DeleteByContaId, que recebe uma lista de contas e deleta todas as reservas e movimentações associadas a elas
                 
-        public void DeleteByContaId(List<Conta> contas)
+        public void DeleteByContaId(List<Conta> contas) //atualizar
         {
             using (var connection = GetConnection())
             {
@@ -159,7 +159,7 @@ namespace ProjetoFinalBD.DAO
             }
         }                
 
-        public Reserva GetById(int id)
+        public Reserva GetById(int id) //necesario atualizar
         {
             using (var connection = GetConnection())
             {
@@ -194,7 +194,7 @@ namespace ProjetoFinalBD.DAO
             return null;
         }
 
-        public Reserva GetbyContaId(int contaId)
+        public Reserva GetbyContaId(int contaId) //atualizar
         {
             using (var connection = GetConnection())
             {

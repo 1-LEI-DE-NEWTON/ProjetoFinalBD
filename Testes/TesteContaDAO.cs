@@ -38,6 +38,18 @@ namespace ProjetoFinalBD.Testes
                     Id = 1,
                     Descricao = "Conta Corrente"
                 },
+                ClienteId = 1,
+                MovimentacoesConta = new List<MovimentacaoConta>
+                {
+                    new MovimentacaoConta
+                    {
+                        Id = 1,
+                        DataMovimentacao = DateTime.Now,
+                        Valor = "0",
+                        TipoMovimentacao = "Depósito"
+                    }
+                }                                
+
             };
 
             var cliente = new Cliente
@@ -67,7 +79,17 @@ namespace ProjetoFinalBD.Testes
                     Id = 2,
                     Descricao = "Conta Poupança"
                 },
-                ClienteId = clienteInserido.Id
+                ClienteId = clienteInserido.Id,
+                MovimentacoesConta = new List<MovimentacaoConta>
+                {
+                    new MovimentacaoConta
+                    {
+                        Id = 1,
+                        DataMovimentacao = DateTime.Now,
+                        Valor = "0",
+                        TipoMovimentacao = "Depósito"
+                    }
+                }
             };
 
             clienteInserido.Contas.Add(conta2);
@@ -76,7 +98,7 @@ namespace ProjetoFinalBD.Testes
 
             //Atualizar a conta
 
-            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa); //nao puxa movConta
 
             clienteDAO.Update(clienteInserido);
 

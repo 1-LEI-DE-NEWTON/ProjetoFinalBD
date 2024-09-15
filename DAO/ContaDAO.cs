@@ -7,11 +7,13 @@ public class ContaDAO : DAOBase
 {
     private readonly ReservaDAO reservaDAO;
     private readonly TipoContaDAO tipoContaDAO;
-    
+    private readonly MovimentacaoContaDAO movimentacaoContaDAO;
+
     public ContaDAO(string connectionString) : base(connectionString) 
     {
         reservaDAO = new ReservaDAO(connectionString);
         tipoContaDAO = new TipoContaDAO(connectionString);
+        movimentacaoContaDAO = new MovimentacaoContaDAO(connectionString);
     }
 
     public void Insert(Conta conta)
@@ -42,8 +44,17 @@ public class ContaDAO : DAOBase
 
                     command.ExecuteNonQuery();
                 }
+
                 
-                
+                //Obtem ContaId pela ultima conta adicionada
+                conta.Id = GetLastAdded().Id;
+
+                //Adiciona movimentacaoConta
+                foreach (var movimentacaoConta in conta.MovimentacoesConta)
+                {
+                    movimentacaoConta.ContaId = conta.Id;
+                    movimentacaoContaDAO.Insert(movimentacaoConta);
+                }
 
                 transaction.Commit();
             }
@@ -56,7 +67,7 @@ public class ContaDAO : DAOBase
         }
     }
 
-    public Conta GetById(int id)
+    public Conta GetById(int id) //Atualizar
     {
         using (var connection = GetConnection())
         {
@@ -114,16 +125,68 @@ public class ContaDAO : DAOBase
                             Saldo = reader.GetDouble("Saldo"),
                             LimiteNegativo = reader.GetDouble("LimiteNegativo"),
                             ClienteId = reader.GetInt32("ClienteId"),
-                            TipoContaId = reader.GetInt32("TipoContaId")
-                        });
+                            TipoContaId = reader.GetInt32("TipoContaId"),
+                            TipoConta = tipoContaDAO.GetById(reader.GetInt32("TipoContaId")),
+                            MovimentacoesConta = new List<MovimentacaoConta>()
+                        });                                                
+                    }
+
+                    if (contas.Count > 0)
+                    {
+                        foreach (var conta in contas)
+                        {
+                            conta.MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(conta.Id);
+                        }
                     }
 
                     return contas;
                 }
             }
         }
-    }   
-    
+    }
+
+    public Conta GetLastAdded()
+    {
+        using (var connection = GetConnection())
+        {
+            Conta conta = null;
+            connection.Open();
+
+            string query = "SELECT * FROM Conta ORDER BY Id DESC LIMIT 1";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        conta = new Conta
+                        {
+                            Id = reader.GetInt32("Id"),
+                            Saldo = reader.GetDouble("Saldo"),
+                            LimiteNegativo = reader.GetDouble("LimiteNegativo"),
+                            ClienteId = reader.GetInt32("ClienteId"),
+                            TipoContaId = reader.GetInt32("TipoContaId"),
+                            TipoConta = tipoContaDAO.GetById(reader.GetInt32("TipoContaId")),
+                            MovimentacoesConta = new List<MovimentacaoConta>()
+                        };
+                    }
+
+                    if (conta != null)
+                    {
+                        conta.MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(conta.Id);
+                    }   
+
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            return conta;
+        }
+    }
+
     public void Update(Conta conta)
     {
         using (var connection = GetConnection())
@@ -134,13 +197,13 @@ public class ContaDAO : DAOBase
                 " ClienteId = @ClienteId, TipoContaId = @TipoContaId WHERE Id = @Id";
 
             var transaction = connection.BeginTransaction();
-
-            //Atualiza o tipoConta
-            conta.TipoConta = tipoContaDAO.GetById(conta.TipoContaId);
-            tipoContaDAO.Update(conta.TipoConta);            
-
+                       
             try
             {
+                //Atualiza o tipoConta
+                conta.TipoConta = tipoContaDAO.GetById(conta.TipoContaId);
+                tipoContaDAO.Update(conta.TipoConta); 
+
                 using (var command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", conta.Id);
@@ -152,8 +215,15 @@ public class ContaDAO : DAOBase
                     command.ExecuteNonQuery();
                 }
 
+                //Atualiza movimentacoesConta
+                foreach (var movimentacaoConta in conta.MovimentacoesConta)
+                {
+                    
+                    movimentacaoContaDAO.Update(movimentacaoConta);
+                }                
+
                 transaction.Commit();
-            }
+            }                                        
             catch
             {
                 transaction.Rollback();
@@ -209,6 +279,12 @@ public class ContaDAO : DAOBase
             foreach (var conta in contas)
             {
                 tipoContaDAO.Delete(conta.TipoContaId);
+            }
+
+            //Deletar movimentacoesConta das contas associadas
+            foreach (var conta in contas)
+            {
+                movimentacaoContaDAO.DeleteByContaId(conta.Id);
             }
         }
     }

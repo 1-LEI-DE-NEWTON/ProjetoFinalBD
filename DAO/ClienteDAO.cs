@@ -11,12 +11,10 @@ namespace ProjetoFinalBD.DAO
     public class ClienteDAO : DAOBase
     {
         private readonly PessoaDAO pessoaDAO;
-        private readonly ContaDAO contaDAO;
-        private readonly TipoContaDAO tipoContaDAO;
+        private readonly ContaDAO contaDAO;        
         public ClienteDAO(string connectionString) : base(connectionString)
         {
-            pessoaDAO = new PessoaDAO(connectionString);
-            tipoContaDAO = new TipoContaDAO(connectionString);
+            pessoaDAO = new PessoaDAO(connectionString);            
             contaDAO = new ContaDAO(connectionString);
             
         }
@@ -134,15 +132,7 @@ namespace ProjetoFinalBD.DAO
 
                     if (cliente != null)
                     {
-                        cliente.Contas = contaDAO.GetContasByClienteId(cliente.Id);
-
-                        if (cliente.Contas.Count > 0)
-                        {
-                            foreach (var conta in cliente.Contas)
-                            {
-                                conta.TipoConta = tipoContaDAO.GetById(conta.TipoContaId);
-                            }
-                        }
+                        cliente.Contas = contaDAO.GetContasByClienteId(cliente.Id);                        
                     }
                 }
             }
