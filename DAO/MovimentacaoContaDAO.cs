@@ -52,6 +52,28 @@ namespace ProjetoFinalBD.DAO
             }
             return movimentacoes;
         }
+        public MovimentacaoConta GetById(int id)
+        {
+            MovimentacaoConta movimentacao = null;
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM MovimentacaoConta WHERE Id = @Id";
+                command.Parameters.AddWithValue("Id", id);
+                var result = command.ExecuteReader();
+                if (result.Read())
+                {
+                    movimentacao = new MovimentacaoConta();
+                    movimentacao.Id = result.GetInt32("Id");
+                    movimentacao.ContaId = result.GetInt32("ContaId");
+                    movimentacao.Valor = result.GetString("valor");
+                    movimentacao.DataMovimentacao = result.GetDateTime("dataMovimentacao");
+                    movimentacao.TipoMovimentacao = result.GetString("TipoMovimentacao");
+                }
+            }
+            return movimentacao;
+        }
 
         public void DeleteByContaId(int id)
         {
@@ -101,29 +123,6 @@ namespace ProjetoFinalBD.DAO
 
                 command.ExecuteNonQuery();
             }
-        }
-
-        public MovimentacaoConta GetById(int id)
-        {
-            MovimentacaoConta movimentacao = null;
-            using (var connection = GetConnection())
-            {
-                connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT * FROM MovimentacaoConta WHERE Id = @Id";
-                command.Parameters.AddWithValue("Id", id);
-                var result = command.ExecuteReader();
-                if (result.Read())
-                {
-                    movimentacao = new MovimentacaoConta();
-                    movimentacao.Id = result.GetInt32("Id");
-                    movimentacao.ContaId = result.GetInt32("ContaId");
-                    movimentacao.Valor = result.GetString("valor");
-                    movimentacao.DataMovimentacao = result.GetDateTime("dataMovimentacao");
-                    movimentacao.TipoMovimentacao = result.GetString("TipoMovimentacao");
-                }
-            }
-            return movimentacao;
-        }
+        }        
     }
 }

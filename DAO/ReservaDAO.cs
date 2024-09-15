@@ -246,8 +246,7 @@ namespace ProjetoFinalBD.DAO
                 return reserva;
             }
         }
-            
-        
+                    
         public void Update(Reserva reserva)
         {
             using (var connection = GetConnection())

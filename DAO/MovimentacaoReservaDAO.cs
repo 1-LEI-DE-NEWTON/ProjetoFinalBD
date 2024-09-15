@@ -60,7 +60,6 @@ namespace ProjetoFinalBD.DAO
                     }
                 }
             }
-
             return movimentacoesReserva;
         }
 
@@ -103,7 +102,8 @@ namespace ProjetoFinalBD.DAO
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "UPDATE MovimentacaoReserva SET DataMovimentacao = @DataMovimentacao, Valor = @Valor, TipoMovimentacao = @TipoMovimentacao, ReservaId = @ReservaId WHERE Id = @Id";
+                    command.CommandText = "UPDATE MovimentacaoReserva SET DataMovimentacao = @DataMovimentacao, " +
+                        "Valor = @Valor, TipoMovimentacao = @TipoMovimentacao, ReservaId = @ReservaId WHERE Id = @Id";
                     command.Parameters.AddWithValue("DataMovimentacao", movimentacaoReserva.DataMovimentacao);
                     command.Parameters.AddWithValue("Valor", movimentacaoReserva.Valor);
                     command.Parameters.AddWithValue("TipoMovimentacao", movimentacaoReserva.TipoMovimentacao);
@@ -144,7 +144,6 @@ namespace ProjetoFinalBD.DAO
                     }
                 }
             }
-
             return movimentacaoReserva;
         }
     }    
