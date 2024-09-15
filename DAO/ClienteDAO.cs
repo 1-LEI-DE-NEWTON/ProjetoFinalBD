@@ -66,7 +66,7 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
-        public Cliente GetById(int id)  //Necessario atualizar
+        public Cliente GetById(int id)
         {
             using (var connection = GetConnection())
             {
@@ -212,9 +212,6 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
-
-
-
     }
 }
 

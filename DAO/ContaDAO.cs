@@ -67,7 +67,7 @@ public class ContaDAO : DAOBase
         }
     }
 
-    public Conta GetById(int id) //Atualizar
+    public Conta GetById(int id)
     {
         using (var connection = GetConnection())
         {
@@ -89,7 +89,11 @@ public class ContaDAO : DAOBase
                             Saldo = reader.GetDouble("Saldo"),
                             LimiteNegativo = reader.GetDouble("LimiteNegativo"),
                             ClienteId = reader.GetInt32("ClienteId"),
-                            TipoContaId = reader.GetInt32("TipoContaId")
+                            TipoContaId = reader.GetInt32("TipoContaId"),
+                            
+                            TipoConta = tipoContaDAO.GetById(reader.GetInt32("TipoContaId")),
+                            
+                            MovimentacoesConta = movimentacaoContaDAO.GetMovimentacoesContaByContaId(id)                            
                         };
                     }
                     else
@@ -239,9 +243,13 @@ public class ContaDAO : DAOBase
             connection.Open();
 
             //Deletar reservas
-            var contas = GetContasByClienteId(id); // nao vai funcionar
+            var clienteId = GetById(id).ClienteId;
+            var contas = GetContasByClienteId(clienteId); 
 
-            reservaDAO.DeleteByContaId(contas);
+            foreach (var conta in contas)
+            {
+                reservaDAO.DeleteByContaId(conta.Id);
+            }            
 
             string query = "DELETE FROM Conta WHERE Id = @Id";
             
@@ -263,7 +271,10 @@ public class ContaDAO : DAOBase
             var contas = GetContasByClienteId(id);
 
             //Deletar reservas
-            reservaDAO.DeleteByContaId(contas);
+            foreach (var conta in contas)
+            {
+                reservaDAO.DeleteByContaId(conta.Id);
+            }            
 
             //Deletar contas
             string query = "DELETE FROM Conta WHERE ClienteId = @ClienteId";

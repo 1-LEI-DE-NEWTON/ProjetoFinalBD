@@ -98,7 +98,7 @@ namespace ProjetoFinalBD.Testes
 
             //Atualizar a conta
 
-            clienteInserido = clienteDAO.GetByPessoaId(idPessoa); //nao puxa movConta
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
             clienteDAO.Update(clienteInserido);
 
@@ -127,7 +127,9 @@ namespace ProjetoFinalBD.Testes
             //Insere a reserva para conta 1 // OK
             reservaDAO.Insert(reserva1);
 
-            var reservaInserida = reservaDAO.GetbyContaId(clienteInserido.Contas[0].Id);
+            var reservaInserida = reservaDAO.GetReservasByContaId(clienteInserido.Contas[0].Id);
+
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa); //nao ta puxando as reservas
 
             //Deleta o cliente e suas contas
             clienteDAO.Delete(clienteInserido.Id);

@@ -9,9 +9,13 @@ namespace ProjetoFinalBD.DAO
 {
     public class ReservaDAO : DAOBase
     {
-        public ReservaDAO(string connectionString) : base(connectionString) { }
+        private readonly MovimentacaoReservaDAO movimentacaoReservaDAO;
+        public ReservaDAO(string connectionString) : base(connectionString) 
+        {
+            movimentacaoReservaDAO = new MovimentacaoReservaDAO(connectionString);
+        }
 
-        public void Insert(Reserva reserva) //atualizar
+        public void Insert(Reserva reserva)
         {
             using (var connection = GetConnection())
             {
@@ -36,28 +40,15 @@ namespace ProjetoFinalBD.DAO
                         command.ExecuteNonQuery();
                     }
 
-                    //Inserir movimentações
+                    //Obtem reservaId pela ultima reserva adicionada
+                    reserva.Id = GetLastAdded().Id;
 
-                    var reservaId = GetbyContaId(reserva.ContaId);
-
+                    //Inserir movimentações                    
                     foreach (var movimentacaoReserva in reserva.MovimentacoesReserva)
                     {
-                        //Criar string para query                        
-                        string insertMovimentacaoQuery = "INSERT INTO movimentacaoReserva " +
-                            "(Id, DataMovimentacao, TipoMovimentacao, Valor, ReservaId) VALUES " +
-                            "(@Id, @DataMovimentacao, @TipoMovimentacao, @Valor, @ReservaId)";
+                        movimentacaoReserva.ReservaId = reserva.Id;
+                        movimentacaoReservaDAO.Insert(movimentacaoReserva);
 
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = insertMovimentacaoQuery;
-                            command.Parameters.AddWithValue("Id", movimentacaoReserva.Id);
-                            command.Parameters.AddWithValue("DataMovimentacao", movimentacaoReserva.DataMovimentacao);
-                            command.Parameters.AddWithValue("TipoMovimentacao", movimentacaoReserva.TipoMovimentacao);
-                            command.Parameters.AddWithValue("Valor", movimentacaoReserva.Valor);
-                            command.Parameters.AddWithValue("ReservaId", reserva.Id);
-
-                            command.ExecuteNonQuery();
-                        }
                     }
 
                     transaction.Commit();
@@ -70,7 +61,7 @@ namespace ProjetoFinalBD.DAO
             }
         }
         
-        public void Delete(int id) //atualizar
+        public void Delete(int id)
         {
             using (var connection = GetConnection())
             {
@@ -80,17 +71,14 @@ namespace ProjetoFinalBD.DAO
                 
                 try
                 {
+                    var reservas = GetReservasByContaId(id); //nao vai funcionar
+
                     //Deletar movimentações
-                    string deleteMovimentacaoQuery = "DELETE FROM movimentacaoReserva WHERE ReservaId = @ReservaId";
-                    using (var command = connection.CreateCommand())
+                    foreach (var reserva in reservas)
                     {
-                        command.CommandText = deleteMovimentacaoQuery;
-                        command.Parameters.AddWithValue("ReservaId", id);
-
-                        command.ExecuteNonQuery();
+                        movimentacaoReservaDAO.DeleteByReservaId(id);
                     }
-
-                    //Deletar reserva
+                    
                     string deleteReservaQuery = "DELETE FROM Reserva WHERE Id = @Id";
                     using (var command = connection.CreateCommand())
                     {
@@ -110,46 +98,33 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
-        //Função DeleteByContaId, que recebe uma lista de contas e deleta todas as reservas e movimentações associadas a elas
-                
-        public void DeleteByContaId(List<Conta> contas) //atualizar
+        //Função DeleteByContaId, que  deleta todas as reservas e movimentações associadas a uma ContaId                
+        public void DeleteByContaId(int id)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
                 var transaction = connection.BeginTransaction();
-        
+
+                var reservas = GetReservasByContaId(id);
                 try
-                {
-                    foreach (var conta in contas)
+                {                    
+                    // Deletar movimentações
+                    foreach (var reserva in reservas)
                     {
-                        // Deletar movimentações
-                        string deleteMovimentacaoQuery = "DELETE FROM movimentacaoReserva WHERE ReservaId IN " +
-                            "(SELECT Id FROM Reserva WHERE ContaId = @ContaId)";
-        
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = deleteMovimentacaoQuery;
-                            command.Parameters.AddWithValue("ContaId", conta.Id);
-                            command.Transaction = transaction;
-        
-                            command.ExecuteNonQuery();
-                        }
-        
-                        // Deletar reservas
-                        string deleteReservaQuery = "DELETE FROM Reserva WHERE ContaId = @ContaId";
-        
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = deleteReservaQuery;
-                            command.Parameters.AddWithValue("ContaId", conta.Id);
-                            command.Transaction = transaction;
-        
-                            command.ExecuteNonQuery();
-                        }
+                        movimentacaoReservaDAO.DeleteByReservaId(reserva.Id);
                     }
+
+                    // Deletar reservas
+                    string deleteReservaQuery = "DELETE FROM Reserva WHERE ContaId = @ContaId";
+       
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = deleteReservaQuery;
+                        command.Parameters.AddWithValue("ContaId", id);                        
         
-                    transaction.Commit();
+                        command.ExecuteNonQuery();
+                    }                                                
                 }
                 catch (Exception)
                 {
@@ -159,7 +134,7 @@ namespace ProjetoFinalBD.DAO
             }
         }                
 
-        public Reserva GetById(int id) //necesario atualizar
+        public Reserva GetById(int id)
         {
             using (var connection = GetConnection())
             {
@@ -182,24 +157,24 @@ namespace ProjetoFinalBD.DAO
                                 Saldo = reader.GetDouble(reader.GetOrdinal("Saldo")),
                                 Taxa = reader.GetDouble(reader.GetOrdinal("Taxa")),
                                 ReservaCol = reader.GetString(reader.GetOrdinal("ReservaCol")),
-                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId"))
+                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
+                                
+                                MovimentacoesReserva = movimentacaoReservaDAO.GetByReservaId(id)
                             };
-
                             return reserva;
                         }
-                    }
+                    }                    
                 }
             }
             
             return null;
         }
 
-        public Reserva GetbyContaId(int contaId) //atualizar
+        public List<Reserva> GetReservasByContaId(int contaId)
         {
             using (var connection = GetConnection())
-            {
-                connection.Open();
-                
+            {                
+                connection.Open();                
                 string query = "SELECT * FROM Reserva WHERE ContaId = @ContaId";
                 
                 using (var command = connection.CreateCommand())
@@ -209,24 +184,116 @@ namespace ProjetoFinalBD.DAO
                     
                     using (var reader = command.ExecuteReader())
                     {
+                        List<Reserva> reservas = new List<Reserva>();
+                        
                         if (reader.Read())
                         {
-                            var reserva = new Reserva
+                            reservas.Add(new Reserva
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 Saldo = reader.GetDouble(reader.GetOrdinal("Saldo")),
                                 Taxa = reader.GetDouble(reader.GetOrdinal("Taxa")),
                                 ReservaCol = reader.GetString(reader.GetOrdinal("ReservaCol")),
-                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId"))
-                            };
+                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
+                                
+                                MovimentacoesReserva = new List<MovimentacaoReserva>()
+                            });                            
+                        }
 
-                            return reserva;
+                        if (reservas.Count > 0)
+                        {
+                            foreach (var reserva in reservas)
+                            {
+                                reserva.MovimentacoesReserva = movimentacaoReservaDAO.GetByReservaId(reserva.Id);
+                            }
+                        }
+                        return reservas;
+                    }                    
+                }
+            }
+        }
+
+        public Reserva GetLastAdded()
+        {
+            Reserva reserva = null;
+            
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM Reserva ORDER BY Id DESC LIMIT 1";
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            reserva = new Reserva
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Saldo = reader.GetDouble(reader.GetOrdinal("Saldo")),
+                                Taxa = reader.GetDouble(reader.GetOrdinal("Taxa")),
+                                ReservaCol = reader.GetString(reader.GetOrdinal("ReservaCol")),
+                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
+
+                                MovimentacoesReserva = new List<MovimentacaoReserva>()
+                            };                            
+                        }
+
+                        if (reserva != null)
+                        {
+                            reserva.MovimentacoesReserva = movimentacaoReservaDAO.GetByReservaId(reserva.Id);
                         }
                     }
                 }
+                return reserva;
             }
-            
-            return null;
         }
-    }
+            
+        
+        public void Update(Reserva reserva)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                
+                var transaction = connection.BeginTransaction();
+                
+                try
+                {
+                    //Atualizar reserva
+                    string query = "UPDATE Reserva SET Saldo = @Saldo, Taxa = @Taxa, ReservaCol = @ReservaCol, " +
+                        "ContaId = @ContaId WHERE Id = @Id";
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = query;
+                        command.Parameters.AddWithValue("Id", reserva.Id);
+                        command.Parameters.AddWithValue("Saldo", reserva.Saldo);
+                        command.Parameters.AddWithValue("Taxa", reserva.Taxa);
+                        command.Parameters.AddWithValue("ReservaCol", reserva.ReservaCol);
+                        command.Parameters.AddWithValue("ContaId", reserva.ContaId);
+
+                        command.ExecuteNonQuery();
+                    }
+
+                    //Atualizar movimentações
+                    foreach (var movimentacaoReserva in reserva.MovimentacoesReserva)
+                    {
+                        movimentacaoReserva.ReservaId = reserva.Id;
+                        movimentacaoReservaDAO.Update(movimentacaoReserva);
+                    }
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+    }        
 }
