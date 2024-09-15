@@ -71,14 +71,8 @@ namespace ProjetoFinalBD.DAO
                 
                 try
                 {
-                    var reservas = GetReservasByContaId(id); //nao vai funcionar
+                    movimentacaoReservaDAO.DeleteByReservaId(id);
 
-                    //Deletar movimentações
-                    foreach (var reserva in reservas)
-                    {
-                        movimentacaoReservaDAO.DeleteByReservaId(id);
-                    }
-                    
                     string deleteReservaQuery = "DELETE FROM Reserva WHERE Id = @Id";
                     using (var command = connection.CreateCommand())
                     {
