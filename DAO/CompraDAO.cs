@@ -28,17 +28,12 @@ namespace ProjetoFinalBD.DAO
 
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = query;
-                    command.Parameters.AddWithValue("DataCompra", compra.DataCompra);
-                    command.Parameters.AddWithValue("Valor", compra.Valor);
-                    command.Parameters.AddWithValue("CartaoId", compra.CartaoId);
-                    command.Parameters.AddWithValue("CategoriaId", compra.CategoriaId);
+                    
 
                     command.ExecuteNonQuery();
                 }
             }
         }
-
         public Compra GetById(int id)
         {
             using (var connection = GetConnection())
@@ -66,7 +61,7 @@ namespace ProjetoFinalBD.DAO
                                 TaxaParcelamento = reader.GetDouble(reader.GetOrdinal("TaxaParcelamento")),
                                 CorretorId = reader.GetInt32(reader.GetOrdinal("CorretorId")),
                                 
-                                Corretor = 
+                                //Corretor = 
                             };
                         }
                     }

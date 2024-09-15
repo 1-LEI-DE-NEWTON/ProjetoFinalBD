@@ -17,7 +17,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "INSERT INTO categoria_cartao (Descricao) VALUES (@Descricao)";
+                string query = "INSERT INTO categoriaCartao (Descricao) VALUES (@Descricao)";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -35,7 +35,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "SELECT * FROM categoria_cartao WHERE Id = @Id";
+                string query = "SELECT * FROM categoriaCartao WHERE Id = @Id";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -64,7 +64,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "SELECT TOP 1 * FROM categoria_cartao ORDER BY Id DESC";
+                string query = "SELECT * FROM categoriaCartao ORDER BY Id DESC LIMIT 1";
 
                 using (var command = connection.CreateCommand())
                 {

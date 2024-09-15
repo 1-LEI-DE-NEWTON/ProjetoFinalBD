@@ -14,7 +14,7 @@ namespace ProjetoFinalBD.Testes
         private readonly ClienteDAO clienteDAO;
         private readonly PessoaDAO pessoaDAO;
         private readonly ReservaDAO reservaDAO;
-
+        private readonly CartaoCreditoDAO cartaoCreditoDAO;
 
         public TesteContaDAO()
         {
@@ -24,42 +24,111 @@ namespace ProjetoFinalBD.Testes
             clienteDAO = new ClienteDAO(connectionString);
             pessoaDAO = new PessoaDAO(connectionString);
             reservaDAO = new ReservaDAO(connectionString);
-        }        
+            cartaoCreditoDAO = new CartaoCreditoDAO(connectionString);
+        }  
+        
+public Cliente GerarClienteAleatorio()
+    {
+        // Listas de valores predefinidos
+        List<string> nomes = new List<string> { "João", "Maria", "Pedro", 
+            "Ana", "Carlos", "Beatriz", "Paulo", "Fernanda", "Lucas", "Juliana" };
+        List<string> cpfs = new List<string> { "12345678900", "09876543211", 
+            "11223344556", "66778899000", "11122233344", "55566677788", "99988877766", "44455566677", "33322211100", "00011122233" };
+        List<string> descricoesTipoConta = new List<string> { "Conta Corrente", "Conta Poupança", "Conta Salário" };
+        List<string> tiposMovimentacao = new List<string> { "Depósito", "Saque", "Transferência" };
+        List<string> fatorRisco = new List<string> { "Baixo", "Médio", "Alto" };
+
+        Random random = new Random();
+
+        // Gerar valores aleatórios
+        string nomeAleatorio = nomes[random.Next(nomes.Count)];
+        string cpfAleatorio = cpfs[random.Next(cpfs.Count)];
+        string descricaoTipoContaAleatoria = descricoesTipoConta[random.Next(descricoesTipoConta.Count)];
+        string tipoMovimentacaoAleatoria = tiposMovimentacao[random.Next(tiposMovimentacao.Count)];
+        double saldoAleatorio = random.Next(0, 10000);
+        double limiteNegativoAleatorio = random.Next(0, 1000);
+        double valorMovimentacaoAleatoria = random.Next(0, 5000);
+        string fatorRiscoAleatorio = fatorRisco[random.Next(fatorRisco.Count)];
+
+        // Criar objeto Cliente
+        var cliente = new Cliente
+        {
+            Id = random.Next(1, 1000),
+            FatorRisco = fatorRiscoAleatorio,
+            RendaMensal = random.Next(1000, 10000).ToString(),
+            Pessoa = new Pessoa
+            {
+                Id = random.Next(1, 1000),
+                Nome = nomeAleatorio,
+                Cpf = cpfAleatorio
+            },
+            Contas = new List<Conta>
+            {
+                new Conta
+                {
+                    Id = random.Next(1, 1000),
+                    Saldo = saldoAleatorio,
+                    LimiteNegativo = limiteNegativoAleatorio,
+                    TipoConta = new TipoConta
+                    {
+                        Id = random.Next(1, 10),
+                        Descricao = descricaoTipoContaAleatoria
+                    },
+                    ClienteId = random.Next(1, 1000),
+                    MovimentacoesConta = new List<MovimentacaoConta>
+                    {
+                        new MovimentacaoConta
+                        {
+                            Id = random.Next(1, 1000),
+                            DataMovimentacao = DateTime.Now,
+                            Valor = valorMovimentacaoAleatoria.ToString(),
+                            TipoMovimentacao = tipoMovimentacaoAleatoria
+                        }
+                    }
+                }
+            }
+        };
+        return cliente;
+    }
 
         public void RunTests()
         {
-            var conta = new Conta
-            {
-                Id = 1,
-                Saldo = 1000,
-                LimiteNegativo = 100,
-                TipoConta = new TipoConta
-                {
-                    Id = 1,
-                    Descricao = "Conta Corrente"
-                },
-                ClienteId = 1,
-                MovimentacoesConta = new List<MovimentacaoConta>
-                {
-                    new MovimentacaoConta
-                    {
-                        Id = 1,
-                        DataMovimentacao = DateTime.Now,
-                        Valor = "0",
-                        TipoMovimentacao = "Depósito"
-                    }
-                }                                
+            //Gera um nome de pessoa aleatoriamente            
 
-            };
+            // var conta = new Conta
+            // {
+            //     Id = 1,
+            //     Saldo = 1000,
+            //     LimiteNegativo = 100,
+            //     TipoConta = new TipoConta
+            //     {
+            //         Id = 1,
+            //         Descricao = "Conta Corrente"
+            //     },
+            //     ClienteId = 1,
+            //     MovimentacoesConta = new List<MovimentacaoConta>
+            //     {
+            //         new MovimentacaoConta
+            //         {
+            //             Id = 1,
+            //             DataMovimentacao = DateTime.Now,
+            //             Valor = "0",
+            //             TipoMovimentacao = "Depósito"
+            //         }
+            //     }                                
 
-            var cliente = new Cliente
-            {
-                Id = 1,
-                Pessoa = new Pessoa { Id = 1, Nome = "Fulano", Cpf = "12345678900" },
-                FatorRisco = "Médio",
-                RendaMensal = "5000",
-                Contas = new List<Conta> { conta }
-            };
+            // };
+
+            // var cliente = new Cliente
+            // {
+            //     Id = 1,
+            //     Pessoa = new Pessoa { Id = 1, Nome = "Fulano", Cpf = "12345678900" },
+            //     FatorRisco = "Médio",
+            //     RendaMensal = "5000",
+            //     Contas = new List<Conta> { conta }
+            // };
+
+            var cliente = GerarClienteAleatorio();
 
             clienteDAO.Insert(cliente); //ATE AQUI INSERE NORMAL
 
@@ -128,8 +197,21 @@ namespace ProjetoFinalBD.Testes
 
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
-            //Deleta o cliente e suas contas
-            clienteDAO.Delete(clienteInserido.Id);            
+            //Cria um cartao de credito
+             var cartaoCredito = new CartaoCredito
+             {
+                 Id = 1,
+                 DataFechamento = "10",
+                 ContaId = clienteInserido.Contas[0].Id,
+                 CategoriaCartao = new CategoriaCartao { Id = 1, Descricao = "Gold" },
+                 LimiteCredito = 1000
+             };
+
+            //Insere o cartao de credito
+            cartaoCreditoDAO.Insert(cartaoCredito);
+
+            // //Deleta o cliente e suas contas
+            // clienteDAO.Delete(clienteInserido.Id);            
         }
     }
 }

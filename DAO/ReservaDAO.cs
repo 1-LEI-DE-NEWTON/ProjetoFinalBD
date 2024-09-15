@@ -26,12 +26,11 @@ namespace ProjetoFinalBD.DAO
                 try
                 {
                     //Inserir reserva
-                    string query = "INSERT INTO Reserva (Id, Saldo, Taxa, ReservaCol, ContaId) " +
-                            "VALUES (@Id, @Saldo, @Taxa, @ReservaCol, @ContaId)";
+                    string query = "INSERT INTO Reserva (Saldo, Taxa, ReservaCol, ContaId) " +
+                            "VALUES (@Saldo, @Taxa, @ReservaCol, @ContaId)";
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = query;
-                        command.Parameters.AddWithValue("Id", reserva.Id);
+                        command.CommandText = query;                        
                         command.Parameters.AddWithValue("Saldo", reserva.Saldo);
                         command.Parameters.AddWithValue("Taxa", reserva.Taxa);
                         command.Parameters.AddWithValue("ReservaCol", reserva.ReservaCol);

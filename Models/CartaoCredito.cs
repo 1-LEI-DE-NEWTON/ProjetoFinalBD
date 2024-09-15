@@ -17,5 +17,8 @@ namespace ProjetoFinalBD.Models
         public double LimiteCredito { get; set; }
         // Relacionamento 1-N com FaturaCartao
         public List<FaturaCartao> FaturasCartao { get; set; }
+        
+        //Relacionamento 1-N com cartaoTransacao
+        public List<CartaoTransacao> CartaoTransacoes { get; set; }
     }
 }

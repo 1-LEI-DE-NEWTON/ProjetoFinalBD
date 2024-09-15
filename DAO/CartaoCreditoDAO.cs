@@ -11,15 +11,15 @@ namespace ProjetoFinalBD.DAO
     {
         private readonly CategoriaCartaoDAO categoriaCartaoDAO;
         private readonly ContaDAO contaDAO;
-        private readonly FaturaCartaoDAO faturaCartaoDAO;
-        private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
+        //private readonly FaturaCartaoDAO faturaCartaoDAO;
+        //private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
 
         public CartaoCreditoDAO(string connectionString) : base(connectionString) 
         {
             categoriaCartaoDAO = new CategoriaCartaoDAO(connectionString);
             contaDAO = new ContaDAO(connectionString);
-            faturaCartaoDAO = new FaturaCartaoDAO(connectionString);
-            cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
+            //faturaCartaoDAO = new FaturaCartaoDAO(connectionString);
+            //cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
          }
 
         public void Insert(CartaoCredito cartaoCredito)
@@ -31,22 +31,12 @@ namespace ProjetoFinalBD.DAO
                 {
                     
                     //Insere a categoria do Cartão de Crédito
+                    categoriaCartaoDAO.Insert(cartaoCredito.CategoriaCartao);
+                    //Obtem o categoriaCartaoId pelo ultimo inserido
+                    cartaoCredito.CategoriaCartaoId = categoriaCartaoDAO.GetByLastAdded().Id;
 
-                    categoriaCartaoDAO
-                    //Baseado em 
-                    //public class CartaoCredito
-                    // {
-                    //     public int Id { get; set; }
-                    //     public string DataFechamento { get; set; }
-                    //     public int? ContaId { get; set; } // Foreign Key para Conta
-                    //     public Conta conta { get; set; }
-                    //     public int? CategoriaCartaoId { get; set; } // Foreign Key para CategoriaCartao
-                    //     public CategoriaCartao CategoriaCartao { get; set; }
-                    //     public double LimiteCredito { get; set; }
-                    //     // Relacionamento 1-N com FaturaCartao
-                    //     public List<FaturaCartao> FaturasCartao { get; set; }
-                    // }
-
+                    //Insere a fatura do Cartão de Crédito       //A FAZER
+                    
                     string query = "INSERT INTO cartaoCredito (DataFechamento, ContaId, " +
                         "CategoriaCartaoId, LimiteCredito) VALUES (@DataFechamento, " +
                         "@ContaId, @CategoriaCartaoId, @LimiteCredito)";
@@ -57,10 +47,109 @@ namespace ProjetoFinalBD.DAO
                     command.Parameters.AddWithValue("CategoriaCartaoId", cartaoCredito.CategoriaCartaoId);
                     command.Parameters.AddWithValue("LimiteCredito", cartaoCredito.LimiteCredito);                                                            
 
-                    command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();                    
                 }
             }
         }
+        
+        public CartaoCredito GetLastAdded()
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
 
+                string query = "SELECT * FROM cartaoCredito ORDER BY Id DESC LIMIT 1";
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new CartaoCredito
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                DataFechamento = reader.GetString(reader.GetOrdinal("DataFechamento")),
+                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
+                                CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
+                                LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito"))
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }                
+        public CartaoCredito GetById(int id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM cartaoCredito WHERE Id = @Id";
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("Id", id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new CartaoCredito
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                DataFechamento = reader.GetString(reader.GetOrdinal("DataFechamento")),
+                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
+                                CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
+                                LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito")),
+
+                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")))
+                                //CartaoTransacoes = cartaoTransacaoDAO.GetByCartaoCreditoId(cartao.Id);
+                        };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        //GetCartoesByContaId
+        public List<CartaoCredito> GetCartoesByContaId(int contaId)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM cartaoCredito WHERE ContaId = @ContaId";
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("ContaId", contaId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        List<CartaoCredito> cartoes = new List<CartaoCredito>();
+
+                        while (reader.Read())
+                        {
+                            cartoes.Add(new CartaoCredito
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                DataFechamento = reader.GetString(reader.GetOrdinal("DataFechamento")),
+                                ContaId = reader.GetInt32(reader.GetOrdinal("ContaId")),
+                                CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
+                                LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito"))
+                            });
+                        }
+                        return cartoes;
+                    }
+                }
+            }
+        }                        
     }
 }

@@ -20,6 +20,7 @@ namespace ProjetoFinalBD.DAO
                 {
                     command.CommandText = "INSERT INTO MovimentacaoReserva (DataMovimentacao, Valor, TipoMovimentacao, ReservaId) " +
                         "VALUES (@DataMovimentacao, @Valor, @TipoMovimentacao, @ReservaId)";
+                    
                     command.Parameters.AddWithValue("DataMovimentacao", movimentacaoReserva.DataMovimentacao);
                     command.Parameters.AddWithValue("Valor", movimentacaoReserva.Valor);
                     command.Parameters.AddWithValue("TipoMovimentacao", movimentacaoReserva.TipoMovimentacao);

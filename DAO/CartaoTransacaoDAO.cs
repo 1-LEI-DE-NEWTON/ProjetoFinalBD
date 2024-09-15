@@ -84,5 +84,8 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
+
+        //GetByCartaoId
+        
     }
 }
