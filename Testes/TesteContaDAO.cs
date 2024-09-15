@@ -180,7 +180,7 @@ namespace ProjetoFinalBD.Testes
             //Adicionar uma nova conta a um cliente existente
             var conta2 = GerarContaAleatoria(new Random());
 
-            clienteInserido.Contas.Add(conta2);
+            conta2.ClienteId = clienteInserido.Id;
 
             contaDAO.Insert(conta2);
 
@@ -189,8 +189,10 @@ namespace ProjetoFinalBD.Testes
 
             clienteDAO.Update(clienteInserido);
 
-            //Cria reservas para conta 1
+            //Cria reservas para conta 0 (Conta 1)
             var reserva1 = GerarReservaAleatoria(new Random());
+
+            reserva1.ContaId = clienteInserido.Contas[0].Id;
 
             //Insere a reserva para conta 1 // OK
             reservaDAO.Insert(reserva1);
@@ -201,15 +203,16 @@ namespace ProjetoFinalBD.Testes
 
             //Cria um cartao de credito
              var cartaoCredito = GerarCartaoCreditoAleatorio(new Random());
+            cartaoCredito.ContaId = clienteInserido.Contas[0].Id;
 
             //Insere o cartao de credito
             cartaoCreditoDAO.Insert(cartaoCredito);
 
             //Obtem o cliente atualizado
-            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa); //Nao obteve cartao de credito
 
-            // //Deleta o cliente e suas contas
-            // clienteDAO.Delete(clienteInserido.Id);            
+            //Deleta o cliente e suas contas
+            clienteDAO.Delete(clienteInserido.Id);
         }
     }
 }

@@ -10,14 +10,14 @@ namespace ProjetoFinalBD.DAO
     public class CartaoCreditoDAO : DAOBase
     {
         private readonly CategoriaCartaoDAO categoriaCartaoDAO;
-        private readonly ContaDAO contaDAO;
+        //private readonly ContaDAO contaDAO;
         //private readonly FaturaCartaoDAO faturaCartaoDAO;
         //private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
 
         public CartaoCreditoDAO(string connectionString) : base(connectionString) 
         {
             categoriaCartaoDAO = new CategoriaCartaoDAO(connectionString);
-            contaDAO = new ContaDAO(connectionString);
+            //contaDAO = new ContaDAO(connectionString);
             //faturaCartaoDAO = new FaturaCartaoDAO(connectionString);
             //cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
          }
@@ -200,6 +200,9 @@ namespace ProjetoFinalBD.DAO
             using (var connection = GetConnection())
             {
                 connection.Open();
+                //Delete categoriaCartao
+                                
+
                 using (var command = connection.CreateCommand())
                 {
                     string query = "DELETE FROM cartaoCredito WHERE ContaId = @ContaId";
