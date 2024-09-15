@@ -218,7 +218,7 @@ public class ContaDAO : DAOBase
                 //Atualiza movimentacoesConta
                 foreach (var movimentacaoConta in conta.MovimentacoesConta)
                 {
-                    
+                    movimentacaoConta.ContaId = conta.Id;
                     movimentacaoContaDAO.Update(movimentacaoConta);
                 }                
 
