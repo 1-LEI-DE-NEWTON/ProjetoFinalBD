@@ -12,14 +12,14 @@ namespace ProjetoFinalBD.DAO
         private readonly CategoriaCartaoDAO categoriaCartaoDAO;
         //private readonly ContaDAO contaDAO;
         //private readonly FaturaCartaoDAO faturaCartaoDAO;
-        //private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
+        private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
 
         public CartaoCreditoDAO(string connectionString) : base(connectionString) 
         {
             categoriaCartaoDAO = new CategoriaCartaoDAO(connectionString);
             //contaDAO = new ContaDAO(connectionString);
             //faturaCartaoDAO = new FaturaCartaoDAO(connectionString);
-            //cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
+            cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
          }
 
         public void Insert(CartaoCredito cartaoCredito)
@@ -179,7 +179,7 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
-        public void Delete(int id)
+        public void Delete(int id) //atualizar
         {
             using (var connection = GetConnection())
             {
@@ -200,8 +200,13 @@ namespace ProjetoFinalBD.DAO
             using (var connection = GetConnection())
             {
                 connection.Open();
-                //Delete categoriaCartao
-                                
+                var cartoes = GetCartoesCreditoByContaId(contaId);
+
+                //Delete categoriaCartao dos cartoes associados
+                foreach (var cartao in cartoes)
+                {
+                    categoriaCartaoDAO.Delete(cartao.CategoriaCartaoId);
+                }                
 
                 using (var command = connection.CreateCommand())
                 {
@@ -211,6 +216,12 @@ namespace ProjetoFinalBD.DAO
                     command.Parameters.AddWithValue("ContaId", contaId);
 
                     command.ExecuteNonQuery();
+                }
+
+                //Deleta as transações associadas
+                foreach (var cartao in cartoes)
+                {
+                    cartaoTransacaoDAO.DeleteByCartaoId(cartao.Id);
                 }
             }
         }                
