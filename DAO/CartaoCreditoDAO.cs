@@ -47,7 +47,14 @@ namespace ProjetoFinalBD.DAO
                     command.Parameters.AddWithValue("CategoriaCartaoId", cartaoCredito.CategoriaCartaoId);
                     command.Parameters.AddWithValue("LimiteCredito", cartaoCredito.LimiteCredito);                                                            
 
-                    command.ExecuteNonQuery();                    
+                    command.ExecuteNonQuery();
+
+                    //Adiciona as transações do Cartão de Crédito
+                    foreach (var transacao in cartaoCredito.CartaoTransacoes)
+                    {
+                        transacao.CartaoId = cartaoCredito.Id;
+                        cartaoTransacaoDAO.Insert(transacao);
+                    }
                 }
             }
         }
@@ -76,7 +83,9 @@ namespace ProjetoFinalBD.DAO
                                 CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
                                 LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito")),
 
-                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")))
+                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId"))),
+
+                                CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(reader.GetInt32(reader.GetOrdinal("Id")))
                             };
                         }
                     }
@@ -88,6 +97,7 @@ namespace ProjetoFinalBD.DAO
         {
             using (var connection = GetConnection())
             {
+                CartaoCredito cartaoCredito = null;
                 connection.Open();
 
                 string query = "SELECT * FROM cartaoCredito WHERE Id = @Id";
@@ -101,7 +111,7 @@ namespace ProjetoFinalBD.DAO
                     {
                         if (reader.Read())
                         {
-                            return new CartaoCredito
+                            cartaoCredito = new CartaoCredito
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 DataFechamento = reader.GetString(reader.GetOrdinal("DataFechamento")),
@@ -109,14 +119,16 @@ namespace ProjetoFinalBD.DAO
                                 CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
                                 LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito")),
 
-                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")))
-                                //CartaoTransacoes = cartaoTransacaoDAO.GetByCartaoCreditoId(cartao.Id);
+                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId"))),
+
+
+                                CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(id)
                         };
                         }
                     }
                 }
+                return cartaoCredito;
             }
-            return null;
         }        
         public List<CartaoCredito> GetCartoesCreditoByContaId(int contaId)
         {
@@ -145,8 +157,18 @@ namespace ProjetoFinalBD.DAO
                                 CategoriaCartaoId = reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")),
                                 LimiteCredito = reader.GetDouble(reader.GetOrdinal("LimiteCredito")),
 
-                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId")))
+                                CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId"))),
+
+                                CartaoTransacoes = new List<CartaoTransacao>()
                             });
+                        }
+
+                        if (cartoes.Count > 0)
+                        {
+                            foreach (var cartao in cartoes)
+                            {
+                                cartao.CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(cartao.Id);
+                            }
                         }
                         return cartoes;
                     }
@@ -176,6 +198,13 @@ namespace ProjetoFinalBD.DAO
                     command.Parameters.AddWithValue("Id", cartaoCredito.Id);
 
                     command.ExecuteNonQuery();
+
+                    //Atualiza cartaoTransacoes
+                    foreach (var transacao in cartaoCredito.CartaoTransacoes)
+                    {
+                        transacao.CartaoId = cartaoCredito.Id;
+                        cartaoTransacaoDAO.Update(transacao);
+                    }
                 }
             }
         }
@@ -184,6 +213,9 @@ namespace ProjetoFinalBD.DAO
             using (var connection = GetConnection())
             {
                 connection.Open();
+                //Deleta a categoriaCartao do cartao
+                categoriaCartaoDAO.Delete(GetById(id).CategoriaCartaoId);
+
                 using (var command = connection.CreateCommand())
                 {
                     string query = "DELETE FROM cartaoCredito WHERE Id = @Id";
@@ -193,6 +225,8 @@ namespace ProjetoFinalBD.DAO
 
                     command.ExecuteNonQuery();
                 }
+
+                //Deleta as transações do cartão // A FAZER                
             }
         }
         public void DeleteByContaId(int contaId)
