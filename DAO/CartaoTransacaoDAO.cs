@@ -44,7 +44,7 @@ namespace ProjetoFinalBD.DAO
                 }
 
                 //Obtem cartaoTransacaoId pelo ultimo inserido
-                cartaoTransacao.Id = GetLastAdded().Id;
+                cartaoTransacao.Id = GetLastAdded().Id; //BandeiraCartaoId = null
 
                 //Adiciona MovimentacoesCartao
                 foreach (var movimentacaoCartao in cartaoTransacao.MovimentacoesCartao)
