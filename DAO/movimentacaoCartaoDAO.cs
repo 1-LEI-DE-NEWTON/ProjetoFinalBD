@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ProjetoFinalBD.DAO
 {
-    public class movimentacaoCartaoDAO : DAOBase
+    public class MovimentacaoCartaoDAO : DAOBase
     {
-        public movimentacaoCartaoDAO(string connectionString) : base(connectionString) { }
+        public MovimentacaoCartaoDAO(string connectionString) : base(connectionString) { }
 
         public void Insert(MovimentacaoCartao movimentacaoCartao)
         {
@@ -97,18 +97,18 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
-        public List<MovimentacaoCartao> GetByCartaoId(int cartaoId)
+        public List<MovimentacaoCartao> GetByCartaoTransacaoId(int cartaoTransacaoId)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
 
-                string query = "SELECT * FROM movimentacaoCartao WHERE CartaoId = @CartaoId";
+                string query = "SELECT * FROM movimentacaoCartao WHERE CartaoTransacaoId = @CartaoTransacaoId";
 
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = query;
-                    command.Parameters.AddWithValue("CartaoId", cartaoId);
+                    command.Parameters.AddWithValue("CartaoTransacaoId", cartaoTransacaoId);
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -172,18 +172,18 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
-        public void DeleteByCartaoId(int cartaoId)
+        public void DeleteByCartaoTransacaoId(int cartaoTransacaoId)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
 
-                string query = "DELETE FROM movimentacaoCartao WHERE CartaoId = @CartaoId";
+                string query = "DELETE FROM movimentacaoCartao WHERE cartaoTransacaoId = @cartaoTransacaoId";
 
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = query;
-                    command.Parameters.AddWithValue("CartaoId", cartaoId);
+                    command.Parameters.AddWithValue("cartaoTransacaoId", cartaoTransacaoId);
 
                     command.ExecuteNonQuery();
                 }
