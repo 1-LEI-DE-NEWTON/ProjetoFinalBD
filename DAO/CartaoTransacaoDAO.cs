@@ -198,13 +198,10 @@ namespace ProjetoFinalBD.DAO
 
                     command.ExecuteNonQuery();
                 }
-
-                //Deleta movimentacoesCartao
+                
                 movimentacaoCartaoDAO.DeleteByCartaoTransacaoId(id);
             }
-        }
-
-        //Deleta todas as transacoes de um cartao
+        }        
         public void DeleteByCartaoId(int cartaoId)
         {
             using (var connection = GetConnection())
