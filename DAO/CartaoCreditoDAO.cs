@@ -49,6 +49,9 @@ namespace ProjetoFinalBD.DAO
 
                     command.ExecuteNonQuery();
 
+                    //Obtem cartaoId pelo ultimo adicionado
+                    cartaoCredito.Id = GetLastAdded().Id;
+
                     //Adiciona as transações do Cartão de Crédito
                     foreach (var transacao in cartaoCredito.CartaoTransacoes)
                     {
@@ -123,7 +126,7 @@ namespace ProjetoFinalBD.DAO
 
 
                                 CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(id)
-                        };
+                            };
                         }
                     }
                 }
@@ -208,11 +211,12 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
-        public void Delete(int id) //atualizar
+        public void Delete(int id)
         {
             using (var connection = GetConnection())
             {
                 connection.Open();
+                
                 //Deleta a categoriaCartao do cartao
                 categoriaCartaoDAO.Delete(GetById(id).CategoriaCartaoId);
 
@@ -226,7 +230,8 @@ namespace ProjetoFinalBD.DAO
                     command.ExecuteNonQuery();
                 }
 
-                //Deleta as transações do cartão // A FAZER                
+                //Deleta as transações do cartão
+                cartaoTransacaoDAO.DeleteByCartaoId(id);
             }
         }
         public void DeleteByContaId(int contaId)

@@ -9,13 +9,11 @@ namespace ProjetoFinalBD.DAO
 {
     public class CartaoTransacaoDAO : DAOBase        
     {
-        private readonly BandeiraCartaoDAO bandeiraCartaoDAO;
-        private readonly CartaoCreditoDAO cartaoCreditoDAO;
+        private readonly BandeiraCartaoDAO bandeiraCartaoDAO;        
         private readonly MovimentacaoCartaoDAO movimentacaoCartaoDAO;
         public CartaoTransacaoDAO(string connectionString) : base(connectionString) 
         {
-            bandeiraCartaoDAO = new BandeiraCartaoDAO(connectionString);
-            cartaoCreditoDAO = new CartaoCreditoDAO(connectionString);
+            bandeiraCartaoDAO = new BandeiraCartaoDAO(connectionString);            
             movimentacaoCartaoDAO = new MovimentacaoCartaoDAO(connectionString);
         }
 
@@ -44,6 +42,9 @@ namespace ProjetoFinalBD.DAO
                     
                     command.ExecuteNonQuery();
                 }
+
+                //Obtem cartaoTransacaoId pelo ultimo inserido
+                cartaoTransacao.Id = GetLastAdded().Id;
 
                 //Adiciona MovimentacoesCartao
                 foreach (var movimentacaoCartao in cartaoTransacao.MovimentacoesCartao)
@@ -82,9 +83,7 @@ namespace ProjetoFinalBD.DAO
                                 NomeCartao = reader.GetString(reader.GetOrdinal("NomeCartao")),
                                 TipoTransacao = reader.GetString(reader.GetOrdinal("TipoTransacao")),
 
-                                BandeiraCartao = bandeiraCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId"))),
-
-                                CartaoCredito = cartaoCreditoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CartaoId"))),
+                                BandeiraCartao = bandeiraCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId"))),                                
 
                                 MovimentacoesCartao = movimentacaoCartaoDAO.GetByCartaoTransacaoId(id)
                             };
@@ -130,8 +129,6 @@ namespace ProjetoFinalBD.DAO
 
                                 BandeiraCartao = bandeiraCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId"))),
 
-                                CartaoCredito = cartaoCreditoDAO.GetById(cartaoId),
-
                                 MovimentacoesCartao = new List<MovimentacaoCartao>()
                             });
                         }
@@ -147,7 +144,49 @@ namespace ProjetoFinalBD.DAO
                     }
                 }
             }
-        }        
+        }
+        
+        public CartaoTransacao GetLastAdded()
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM cartaoTransacao ORDER BY Id DESC LIMIT 1";
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new CartaoTransacao
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                NumeroCartao = reader.GetString(reader.GetOrdinal("NumeroCartao")),
+                                Cvc = reader.GetString(reader.GetOrdinal("Cvc")),
+                                CartaoId = reader.GetInt32(reader.GetOrdinal("CartaoId")),
+                                TipoCartao = reader.GetString(reader.GetOrdinal("TipoCartao")),
+                                IsInternacional = reader.GetBoolean(reader.GetOrdinal("IsInternacional")),
+                                BandeiraCartaoId = reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId")),
+                                NomeCartao = reader.GetString(reader.GetOrdinal("NomeCartao")),
+                                TipoTransacao = reader.GetString(reader.GetOrdinal("TipoTransacao")),
+
+                                BandeiraCartao = bandeiraCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId"))),
+
+                                MovimentacoesCartao = movimentacaoCartaoDAO.GetByCartaoTransacaoId(reader.GetInt32(reader.GetOrdinal("Id")))
+                            };
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                }
+            }
+        }
         public void Update(CartaoTransacao cartaoTransacao)
         {
             using (var connection = GetConnection())

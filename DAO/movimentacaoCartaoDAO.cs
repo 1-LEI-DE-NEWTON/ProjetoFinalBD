@@ -17,8 +17,8 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "INSERT INTO movimentacaoCartao (DataMovimentacao, Valor, CartaoId) " +
-                    "VALUES (@DataMovimentacao, @Valor, @CartaoId)";
+                string query = "INSERT INTO movimentacaoCartao (DataMovimentacao, Valor, CartaoTransacaoId) " +
+                    "VALUES (@DataMovimentacao, @Valor, @CartaoTransacaoId)";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -54,7 +54,7 @@ namespace ProjetoFinalBD.DAO
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 DataMovimentacao = reader.GetDateTime(reader.GetOrdinal("DataMovimentacao")),
                                 Valor = reader.GetDouble(reader.GetOrdinal("Valor")),
-                                CartaoTransacaoId = reader.GetInt32(reader.GetOrdinal("CartaoId")),
+                                CartaoTransacaoId = reader.GetInt32(reader.GetOrdinal("CartaoTransacaoId")),
                                 TipoMovimentacao = reader.GetString(reader.GetOrdinal("TipoMovimentacao"))                                
                             };
                         }
@@ -87,7 +87,7 @@ namespace ProjetoFinalBD.DAO
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 DataMovimentacao = reader.GetDateTime(reader.GetOrdinal("DataMovimentacao")),
                                 Valor = reader.GetDouble(reader.GetOrdinal("Valor")),
-                                CartaoTransacaoId = reader.GetInt32(reader.GetOrdinal("CartaoId")),
+                                CartaoTransacaoId = reader.GetInt32(reader.GetOrdinal("CartaoTransacaoId")),
                                 TipoMovimentacao = reader.GetString(reader.GetOrdinal("TipoMovimentacao"))
                             });
                         }
@@ -121,7 +121,7 @@ namespace ProjetoFinalBD.DAO
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 DataMovimentacao = reader.GetDateTime(reader.GetOrdinal("DataMovimentacao")),
                                 Valor = reader.GetDouble(reader.GetOrdinal("Valor")),
-                                CartaoTransacaoId = reader.GetInt32(reader.GetOrdinal("CartaoId")),
+                                CartaoTransacaoId = reader.GetInt32(reader.GetOrdinal("CartaoTransacaoId")),
                                 TipoMovimentacao = reader.GetString(reader.GetOrdinal("TipoMovimentacao"))
                             });
                         }
@@ -146,7 +146,7 @@ namespace ProjetoFinalBD.DAO
                     command.CommandText = query;
                     command.Parameters.AddWithValue("DataMovimentacao", movimentacaoCartao.DataMovimentacao);
                     command.Parameters.AddWithValue("Valor", movimentacaoCartao.Valor);
-                    command.Parameters.AddWithValue("CartaoId", movimentacaoCartao.CartaoTransacaoId);
+                    command.Parameters.AddWithValue("CartaoTransacaoId", movimentacaoCartao.CartaoTransacaoId);
                     command.Parameters.AddWithValue("Id", movimentacaoCartao.Id);
 
                     command.ExecuteNonQuery();

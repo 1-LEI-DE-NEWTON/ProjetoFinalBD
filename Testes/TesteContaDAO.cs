@@ -139,6 +139,50 @@ namespace ProjetoFinalBD.Testes
             };
             return reserva;
         }
+        
+        public CartaoTransacao GerarTransacaoAleatoria(Random random)
+        {
+            // Listas de valores predefinidos
+            List<string> tiposTransacao = new List<string> { "Debito", "Credito", "Estorno" };
+            List<string> tiposCartao = new List<string> { "Físico", "Virtual", "Temporário", "Pré-pago" };
+            List<string> isInternacional = new List<string> { "Sim", "Não" };
+            List<string> bandeiras = new List<string> { "Visa", "Mastercard", "Elo", "American Express" };
+
+            // Gerar valores aleatorios
+            string tipoTransacaoAleatoria = tiposTransacao[random.Next(tiposTransacao.Count)];
+            string tipoCartaoAleatorio = tiposCartao[random.Next(tiposCartao.Count)];
+            bool isInternacionalAleatorio = isInternacional[random.Next(isInternacional.Count)] == "Sim" ? true : false;
+            string nomeCartao = "Cartão " + random.Next(1, 1000).ToString();
+
+            //Criar objeto CartaoTransacao
+            var cartaoTransacao = new CartaoTransacao
+            {
+                Id = random.Next(1, 1000),
+                NumeroCartao = random.Next(100000000, 999999999).ToString(),
+                NomeCartao = nomeCartao,
+                Cvc = random.Next(100, 999).ToString(),
+                TipoTransacao = tipoTransacaoAleatoria,
+                TipoCartao = tipoCartaoAleatorio,
+                IsInternacional = isInternacionalAleatorio,
+                CartaoId = random.Next(1, 1000),
+                MovimentacoesCartao = new List<MovimentacaoCartao>
+                {
+                    new MovimentacaoCartao
+                    {
+                        Id = random.Next(1, 1000),
+                        DataMovimentacao = DateTime.Now,
+                        Valor = random.Next(0, 1000),
+                        TipoMovimentacao = tipoTransacaoAleatoria
+                    }
+                },
+                BandeiraCartao = new BandeiraCartao
+                {
+                    Id = random.Next(1, 1000),
+                    Descricao = bandeiras[random.Next(bandeiras.Count)]
+                }
+            };
+            return cartaoTransacao;
+        }
 
         public CartaoCredito GerarCartaoCreditoAleatorio(Random random)
         {
@@ -161,7 +205,18 @@ namespace ProjetoFinalBD.Testes
                     Id = random.Next(1, 10),
                     Descricao = categoriaCartaoAleatoria
                 },
-                LimiteCredito = limiteCreditoAleatorio
+                LimiteCredito = limiteCreditoAleatorio,
+
+                //Faturas = new List<Fatura>
+                //{
+                //    GerarFaturaAleatoria(random)
+                //},
+
+                //Adiciona as trasações do cartao                
+                CartaoTransacoes = new List<CartaoTransacao>
+                {
+                    GerarTransacaoAleatoria(random)
+                }
             };
             return cartaoCredito;
         }
@@ -204,12 +259,15 @@ namespace ProjetoFinalBD.Testes
             //Cria um cartao de credito
              var cartaoCredito = GerarCartaoCreditoAleatorio(new Random());
             cartaoCredito.ContaId = clienteInserido.Contas[0].Id;
+            
 
             //Insere o cartao de credito
-            cartaoCreditoDAO.Insert(cartaoCredito);
+            cartaoCreditoDAO.Insert(cartaoCredito); //problema com bandeiraCartaoId = null
 
             //Obtem o cliente atualizado
-            clienteInserido = clienteDAO.GetByPessoaId(idPessoa); //Nao obteve cartao de credito
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
+
+            
 
             //Deleta o cliente e suas contas
             clienteDAO.Delete(clienteInserido.Id);
