@@ -100,7 +100,9 @@ namespace ProjetoFinalBD.DAO
 
                                 BandeiraCartao = bandeiraCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId"))),                                
 
-                                MovimentacoesCartao = movimentacaoCartaoDAO.GetByCartaoTransacaoId(id)
+                                MovimentacoesCartao = movimentacaoCartaoDAO.GetByCartaoTransacaoId(id),
+
+                                Compras = compraDAO.GetByCartaoTransacaoId(id)
                             };
                         }
                         else
@@ -144,7 +146,9 @@ namespace ProjetoFinalBD.DAO
 
                                 BandeiraCartao = bandeiraCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId"))),
 
-                                MovimentacoesCartao = new List<MovimentacaoCartao>()
+                                MovimentacoesCartao = new List<MovimentacaoCartao>(),
+
+                                Compras = new List<Compra>()
                             });
                         }
 
@@ -153,6 +157,7 @@ namespace ProjetoFinalBD.DAO
                             foreach (var cartaoTransacao in cartaoTransacoes)
                             {
                                 cartaoTransacao.MovimentacoesCartao = movimentacaoCartaoDAO.GetByCartaoTransacaoId(cartaoTransacao.Id);
+                                cartaoTransacao.Compras = compraDAO.GetByCartaoTransacaoId(cartaoTransacao.Id);
                             }
                         }
                         return cartaoTransacoes;
@@ -191,7 +196,9 @@ namespace ProjetoFinalBD.DAO
 
                                 BandeiraCartao = bandeiraCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("BandeiraCartaoId"))),
 
-                                MovimentacoesCartao = movimentacaoCartaoDAO.GetByCartaoTransacaoId(reader.GetInt32(reader.GetOrdinal("Id")))
+                                MovimentacoesCartao = movimentacaoCartaoDAO.GetByCartaoTransacaoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                Compras = compraDAO.GetByCartaoTransacaoId(reader.GetInt32(reader.GetOrdinal("Id")))
                             };
                         }
                         else
@@ -239,6 +246,13 @@ namespace ProjetoFinalBD.DAO
                     movimentacaoCartao.CartaoTransacaoId = cartaoTransacao.Id;
                     movimentacaoCartaoDAO.Update(movimentacaoCartao);
                 }
+
+                //Atualiza compras
+                foreach (var compra in cartaoTransacao.Compras)
+                {
+                    compra.CartaoTransacaoId = cartaoTransacao.Id;
+                    compraDAO.Update(compra);
+                }
             }
         }
         public void Delete(int id)
@@ -259,6 +273,8 @@ namespace ProjetoFinalBD.DAO
                 bandeiraCartaoDAO.Delete(GetById(id).BandeiraCartaoId);
 
                 movimentacaoCartaoDAO.DeleteByCartaoTransacaoId(id);
+
+                compraDAO.DeleteByCartaoTransacaoId(id);
             }
         }        
         public void DeleteByCartaoId(int cartaoId)
@@ -289,6 +305,12 @@ namespace ProjetoFinalBD.DAO
                 foreach (var transacao in transacoes)
                 {
                     bandeiraCartaoDAO.Delete(transacao.BandeiraCartaoId);
+                }
+
+                //Deleta compras
+                foreach (var transacao in transacoes)
+                {
+                    compraDAO.DeleteByCartaoTransacaoId(transacao.Id);
                 }
             }
         }
