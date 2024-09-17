@@ -27,7 +27,7 @@ namespace ProjetoFinalBD.DAO
                 bandeiraCartaoDAO.Insert(cartaoTransacao.BandeiraCartao);
 
                 //Obtem bandeiraCartaoId pelo ultimo adicionado
-                cartaoTransacao.BandeiraCartao.Id = bandeiraCartaoDAO.GetLastAdded().Id;
+                cartaoTransacao.BandeiraCartaoId = bandeiraCartaoDAO.GetLastAdded().Id;
 
                 string query = "INSERT INTO cartaoTransacao (NumeroCartao, Cvc, CartaoId, TipoCartao, NomeCartao, " +
                     "TipoTransacao, IsInternacional, BandeiraCartaoId) VALUES (@NumeroCartao, " +
@@ -50,7 +50,7 @@ namespace ProjetoFinalBD.DAO
                 }
 
                 //Obtem cartaoTransacaoId pelo ultimo inserido
-                cartaoTransacao.Id = GetLastAdded().Id; //BandeiraCartaoId = null
+                cartaoTransacao.Id = GetLastAdded().Id;
 
                 //Adiciona MovimentacoesCartao
                 foreach (var movimentacaoCartao in cartaoTransacao.MovimentacoesCartao)

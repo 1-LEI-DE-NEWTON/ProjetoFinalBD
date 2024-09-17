@@ -262,12 +262,12 @@ namespace ProjetoFinalBD.Testes
             
 
             //Insere o cartao de credito
-            cartaoCreditoDAO.Insert(cartaoCredito); //problema com bandeiraCartaoId = null
+            cartaoCreditoDAO.Insert(cartaoCredito);
 
             //Obtem o cliente atualizado
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
-            
+            // FALTA FAZER COMPRA
 
             //Deleta o cliente e suas contas
             clienteDAO.Delete(clienteInserido.Id);
