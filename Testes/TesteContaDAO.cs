@@ -267,7 +267,7 @@ namespace ProjetoFinalBD.Testes
             //Obtem o cliente atualizado
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
-            // FALTA FAZER COMPRA
+            // FALTA FAZER TESTES PARA COMPRA + CORRETOR 
 
             //Deleta o cliente e suas contas
             clienteDAO.Delete(clienteInserido.Id);
