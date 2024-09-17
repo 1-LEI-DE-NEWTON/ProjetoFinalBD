@@ -10,7 +10,7 @@ namespace ProjetoFinalBD.DAO
     public class CartaoTransacaoDAO : DAOBase        
     {
         private readonly BandeiraCartaoDAO bandeiraCartaoDAO;        
-        private readonly MovimentacaoCartaoDAO movimentacaoCartaoDAO;
+        private readonly MovimentacaoCartaoDAO movimentacaoCartaoDAO;        
         public CartaoTransacaoDAO(string connectionString) : base(connectionString) 
         {
             bandeiraCartaoDAO = new BandeiraCartaoDAO(connectionString);            
@@ -21,7 +21,13 @@ namespace ProjetoFinalBD.DAO
         {
             using (var connection = GetConnection())
             {
-                connection.Open();                                
+                connection.Open();
+
+                //Adiciona a bandeira do Cartão de Crédito                    
+                bandeiraCartaoDAO.Insert(cartaoTransacao.BandeiraCartao);
+
+                //Obtem bandeiraCartaoId pelo ultimo adicionado
+                cartaoTransacao.BandeiraCartao.Id = bandeiraCartaoDAO.GetLastAdded().Id;
 
                 string query = "INSERT INTO cartaoTransacao (NumeroCartao, Cvc, CartaoId, TipoCartao, NomeCartao, " +
                     "TipoTransacao, IsInternacional, BandeiraCartaoId) VALUES (@NumeroCartao, " +
@@ -51,7 +57,7 @@ namespace ProjetoFinalBD.DAO
                 {
                     movimentacaoCartao.CartaoTransacaoId = cartaoTransacao.Id;
                     movimentacaoCartaoDAO.Insert(movimentacaoCartao);
-                }
+                }                
             }
         }        
         public CartaoTransacao GetById(int id)
@@ -191,7 +197,11 @@ namespace ProjetoFinalBD.DAO
         {
             using (var connection = GetConnection())
             {
-                connection.Open();                
+                connection.Open();
+
+                //Atualiza bandeiraCartao
+                cartaoTransacao.BandeiraCartao = bandeiraCartaoDAO.GetById(cartaoTransacao.BandeiraCartaoId);
+                bandeiraCartaoDAO.Update(cartaoTransacao.BandeiraCartao);
 
                 string query = "UPDATE cartaoTransacao SET NumeroCartao = @NumeroCartao, Cvc = @Cvc, CartaoId = @CartaoId, " +
                     "TipoCartao = @TipoCartao, NomeCartao = @NomeCartao, " +
@@ -226,7 +236,7 @@ namespace ProjetoFinalBD.DAO
         {
             using (var connection = GetConnection())
             {
-                connection.Open();
+                connection.Open();                
 
                 string query = "DELETE FROM cartaoTransacao WHERE Id = @Id";
 
@@ -237,7 +247,8 @@ namespace ProjetoFinalBD.DAO
 
                     command.ExecuteNonQuery();
                 }
-                
+                bandeiraCartaoDAO.Delete(GetById(id).BandeiraCartaoId);
+
                 movimentacaoCartaoDAO.DeleteByCartaoTransacaoId(id);
             }
         }        
@@ -263,6 +274,12 @@ namespace ProjetoFinalBD.DAO
                 foreach (var transacao in transacoes)
                 {                    
                     movimentacaoCartaoDAO.DeleteByCartaoTransacaoId(transacao.Id);
+                }
+
+                //Deleta bandeiraCartao
+                foreach (var transacao in transacoes)
+                {
+                    bandeiraCartaoDAO.Delete(transacao.BandeiraCartaoId);
                 }
             }
         }

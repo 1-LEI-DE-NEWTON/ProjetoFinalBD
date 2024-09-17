@@ -52,6 +52,31 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
+        public BandeiraCartao GetLastAdded()
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM BandeiraCartao ORDER BY Id DESC LIMIT 1";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new BandeiraCartao
+                            {
+                                Id = reader.GetInt32(0),
+                                Descricao = reader.GetString(1)
+                            };
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
         public void Update(BandeiraCartao bandeiraCartao)
         {
             using (var connection = GetConnection())

@@ -11,7 +11,7 @@ namespace ProjetoFinalBD.DAO
     {
         private readonly CategoriaCartaoDAO categoriaCartaoDAO;
         //private readonly ContaDAO contaDAO;
-        //private readonly FaturaCartaoDAO faturaCartaoDAO;
+        //private readonly FaturaCartaoDAO faturaCartaoDAO;        
         private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
 
         public CartaoCreditoDAO(string connectionString) : base(connectionString) 
@@ -57,7 +57,7 @@ namespace ProjetoFinalBD.DAO
                     {
                         transacao.CartaoId = cartaoCredito.Id;
                         cartaoTransacaoDAO.Insert(transacao);
-                    }
+                    }                                    
                 }
             }
         }

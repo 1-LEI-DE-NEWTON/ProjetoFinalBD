@@ -22,14 +22,35 @@ namespace ProjetoFinalBD.DAO
             using (var connection = GetConnection())
             {
                 connection.Open();
-
-                string query = "INSERT INTO compra (DataCompra, Valor, CartaoId, CategoriaId) " +
-                    "VALUES (@DataCompra, @Valor, @CartaoId, @CategoriaId)";
+                //        public class Compra
+                //{
+                //    public int Id { get; set; }
+                //    public double Valor { get; set; }
+                //    public int QuantidadeParcelas { get; set; }
+                //    public double TaxaParcelamento { get; set; }
+                //    public string Credor { get; set; }
+                //    public int? CorretorId { get; set; } // Foreign Key para Corretor
+                //    public Corretor Corretor { get; set; }
+                //    public int? CartaoTransacaoId { get; set; } // Foreign Key para CartaoTransacao
+                //    public CartaoTransacao CartaoTransacao { get; set; }
+                //    public DateTime DataCompra { get; set; }
+                //}
+                //Query para compra
+                string query = "INSERT INTO compra (Valor, QuantidadeParcelas, TaxaParcelamento, Credor, " +
+                    "CorretorId, CartaoTransacaoId, DataCompra) VALUES (@Valor, @QuantidadeParcelas, " +
+                    "@TaxaParcelamento, @Credor, @CorretorId, @CartaoTransacaoId, @DataCompra)";
 
                 using (var command = connection.CreateCommand())
                 {
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("Valor", compra.Valor);
+                    command.Parameters.AddWithValue("QuantidadeParcelas", compra.QuantidadeParcelas);
+                    command.Parameters.AddWithValue("TaxaParcelamento", compra.TaxaParcelamento);
+                    command.Parameters.AddWithValue("Credor", compra.Credor);
+                    command.Parameters.AddWithValue("CorretorId", compra.CorretorId);
+                    command.Parameters.AddWithValue("CartaoTransacaoId", compra.CartaoTransacaoId);
+                    command.Parameters.AddWithValue("DataCompra", compra.DataCompra);
                     
-
                     command.ExecuteNonQuery();
                 }
             }
