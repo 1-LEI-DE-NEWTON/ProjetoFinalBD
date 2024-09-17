@@ -17,15 +17,16 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "INSERT INTO movimentacaoCartao (DataMovimentacao, Valor, CartaoTransacaoId) " +
-                    "VALUES (@DataMovimentacao, @Valor, @CartaoTransacaoId)";
+                string query = "INSERT INTO movimentacaoCartao (DataMovimentacao, Valor, CartaoTransacaoId, " +
+                    "TipoMovimentacao) VALUES (@DataMovimentacao, @Valor, @CartaoTransacaoId, @TipoMovimentacao)";
 
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = query;
                     command.Parameters.AddWithValue("DataMovimentacao", movimentacaoCartao.DataMovimentacao);
                     command.Parameters.AddWithValue("Valor", movimentacaoCartao.Valor);
-                    command.Parameters.AddWithValue("CartaoId", movimentacaoCartao.CartaoTransacaoId);
+                    command.Parameters.AddWithValue("CartaoTransacaoId", movimentacaoCartao.CartaoTransacaoId);
+                    command.Parameters.AddWithValue("TipoMovimentacao", movimentacaoCartao.TipoMovimentacao);
 
                     command.ExecuteNonQuery();
                 }

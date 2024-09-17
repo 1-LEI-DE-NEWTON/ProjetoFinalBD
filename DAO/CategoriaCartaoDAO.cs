@@ -92,7 +92,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "SELECT * FROM categoria_cartao";
+                string query = "SELECT * FROM categoriaCartao";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -123,7 +123,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "UPDATE categoria_cartao SET Descricao = @Descricao WHERE Id = @Id";
+                string query = "UPDATE categoriaCartao SET Descricao = @Descricao WHERE Id = @Id";
 
                 using (var command = connection.CreateCommand())
                 {
@@ -142,7 +142,7 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
-                string query = "DELETE FROM categoria_cartao WHERE Id = @Id";
+                string query = "DELETE FROM categoriaCartao WHERE Id = @Id";
 
                 using (var command = connection.CreateCommand())
                 {
