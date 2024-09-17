@@ -52,6 +52,31 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
+        public Corretor GetLastAdded()
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT Id, Nome FROM Corretor ORDER BY Id DESC LIMIT 1";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Corretor
+                            {
+                                Id = reader.GetInt32(0),
+                                Nome = reader.GetString(1)
+                            };
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
         public void Update(Corretor corretor)
         {
             using (var connection = GetConnection())

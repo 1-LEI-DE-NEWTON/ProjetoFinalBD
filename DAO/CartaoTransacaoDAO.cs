@@ -10,11 +10,13 @@ namespace ProjetoFinalBD.DAO
     public class CartaoTransacaoDAO : DAOBase        
     {
         private readonly BandeiraCartaoDAO bandeiraCartaoDAO;        
-        private readonly MovimentacaoCartaoDAO movimentacaoCartaoDAO;        
+        private readonly MovimentacaoCartaoDAO movimentacaoCartaoDAO;
+        private readonly CompraDAO compraDAO;
         public CartaoTransacaoDAO(string connectionString) : base(connectionString) 
         {
             bandeiraCartaoDAO = new BandeiraCartaoDAO(connectionString);            
             movimentacaoCartaoDAO = new MovimentacaoCartaoDAO(connectionString);
+            compraDAO = new CompraDAO(connectionString);
         }
 
         public void Insert(CartaoTransacao cartaoTransacao)
@@ -57,7 +59,14 @@ namespace ProjetoFinalBD.DAO
                 {
                     movimentacaoCartao.CartaoTransacaoId = cartaoTransacao.Id;
                     movimentacaoCartaoDAO.Insert(movimentacaoCartao);
-                }                
+                }
+
+                //Adiciona compras
+                foreach (var compra in cartaoTransacao.Compras)
+                {
+                    compra.CartaoTransacaoId = cartaoTransacao.Id;
+                    compraDAO.Insert(compra);
+                }
             }
         }        
         public CartaoTransacao GetById(int id)

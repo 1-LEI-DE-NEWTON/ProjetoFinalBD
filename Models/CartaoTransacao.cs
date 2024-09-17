@@ -19,6 +19,7 @@ namespace ProjetoFinalBD.Models
         public bool IsInternacional { get; set; }
         public int BandeiraCartaoId { get; set; } // Foreign Key para BandeiraCartao
         public BandeiraCartao BandeiraCartao { get; set; }
-        public List<MovimentacaoCartao> MovimentacoesCartao { get; set; } // Relacionamento 1-N
+        public List<MovimentacaoCartao> MovimentacoesCartao { get; set; } // Relacionamento 1-N        
+        public List<Compra> Compras { get; set; } // Relacionamento 1-N
     }
 }
