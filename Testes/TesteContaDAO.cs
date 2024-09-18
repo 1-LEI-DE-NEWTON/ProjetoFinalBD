@@ -244,10 +244,10 @@ namespace ProjetoFinalBD.Testes
                 },
                 LimiteCredito = limiteCreditoAleatorio,
 
-                //Faturas = new List<Fatura>
-                //{
-                //    GerarFaturaAleatoria(random)
-                //},
+                FaturasCartao = new List<FaturaCartao>
+                {
+                   GerarFaturaCartaoAleatoria(random)
+                },
 
                 //Adiciona as trasações do cartao                
                 CartaoTransacoes = new List<CartaoTransacao>
@@ -256,6 +256,82 @@ namespace ProjetoFinalBD.Testes
                 }
             };
             return cartaoCredito;
+        }
+        public FaturaCartao GerarFaturaCartaoAleatoria(Random random)
+        {
+            // Listas de valores predefinidos
+            List<string> meses = new List<string> { "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
+                "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro" };
+
+            // Gerar valores aleatórios para a fatura
+            string mesReferenciaAleatorio = meses[random.Next(meses.Count)];
+            string anoReferenciaAleatorio = random.Next(2010, 2021).ToString();
+            double valorAleatorio = random.Next(0, 1000);
+
+            // Criar objeto FaturaCartao
+            var faturaCartao = new FaturaCartao
+            {
+                Id = random.Next(1, 1000),
+                MesReferencia = mesReferenciaAleatorio,
+                AnoReferencia = anoReferenciaAleatorio,
+                Valor = valorAleatorio.ToString(),
+                CartaoCreditoId = random.Next(1, 1000),
+                DataPagamento = DateTime.Now.ToString(),
+                ItensFaturas = new List<ItensFatura>
+                {
+                    new ItensFatura
+                    {
+                        Id = random.Next(1, 1000),
+                        Descricao = "Item " + random.Next(1, 1000).ToString(),                        
+                        FaturaCartaoId = random.Next(1, 1000)
+                    }
+                },
+                BoletosCustomizados = new List<BoletoCustomizado>
+                {
+                    GerarBoletoCustomizadoAleatorio(random)                    
+                },
+                Pagamentos = new List<Pagamento>
+                {
+                    GerarPagamentoAleatorio(random)                    
+                }
+            };
+            return faturaCartao;
+        }
+        public BoletoCustomizado GerarBoletoCustomizadoAleatorio(Random random)
+        {
+            var boletoCustomizado = new BoletoCustomizado
+            {
+                Id = random.Next(1, 1000),
+                DataVencimento = DateTime.Now,
+                DataGeracao = DateTime.Now,
+                CodigoBarras = random.Next(100000000, 999999999).ToString(),
+                Valor = random.Next(1, 1000).ToString(),
+                TipoBoletoCustomizado = new TipoBoletoCustomizado
+                {
+                    Id = random.Next(1, 1000),
+                    Descricao = "Boleto " + random.Next(1, 1000).ToString()
+                },
+                TipoBoletoCustomizadoId = random.Next(1, 1000),
+                FaturaCartaoId = random.Next(1, 1000),
+                Pagamentos = new List<Pagamento>
+                {
+                    GerarPagamentoAleatorio(random)
+                }
+            };
+            return boletoCustomizado;
+        }
+
+        public Pagamento GerarPagamentoAleatorio(Random random)
+        {
+            var pagamento = new Pagamento
+            {
+                Id = random.Next(1, 1000),
+                DataPagamento = DateTime.Now,
+                ValorTotal = random.Next(1, 1000).ToString(),
+                ValorParcial = random.Next(1, 900).ToString(),                
+                FaturaCartaoId = random.Next(1, 1000)
+            };
+            return pagamento;
         }
 
         public void RunTests()
@@ -295,19 +371,15 @@ namespace ProjetoFinalBD.Testes
 
             //Cria um cartao de credito
              var cartaoCredito = GerarCartaoCreditoAleatorio(new Random());
-            cartaoCredito.ContaId = clienteInserido.Contas[0].Id;
-            
+            cartaoCredito.ContaId = clienteInserido.Contas[0].Id;                        
 
             //Insere o cartao de credito
-            cartaoCreditoDAO.Insert(cartaoCredito); // FALTA FAZER TESTES PARA INCLUIR FATURA CARTAO 
-                                                    // FALTA FAZER TESTES PARA INCLUIR PAGAMENTO
-                                                    // FALTA FAZER TESTES PARA INCLUIR BOLETO CUSTOMIZADO
-
+            cartaoCreditoDAO.Insert(cartaoCredito);         
             //Obtem o cliente atualizado
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);            
             
             //Deleta o cliente e suas contas
-            clienteDAO.Delete(clienteInserido.Id);
+            //clienteDAO.Delete(clienteInserido.Id);
             
             // OK!!
         }

@@ -23,7 +23,12 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
-                {                    
+                {
+                    //Adiciona o TipoBoletoCustomizado
+                    tipoBoletoCustomizadoDAO.Insert(boletoCustomizado.TipoBoletoCustomizado);
+                    //Obtem o TipoBoletoCusotmizadoId pelo ultimo adicionado
+                    boletoCustomizado.TipoBoletoCustomizadoId = tipoBoletoCustomizadoDAO.GetLastAdded().Id;
+
                     command.CommandText = "INSERT INTO BoletoCustomizado (Valor, DataVencimento, " +
                         "DataGeracao, CodigoBarras, TipoBoletoCustomizadoId, FaturaCartaoId) VALUES (@Valor, " +
                         "@DataVencimento, @DataGeracao, @CodigoBarras, @TipoBoletoCustomizadoId, @FaturaCartaoId)";
@@ -42,11 +47,11 @@ namespace ProjetoFinalBD.DAO
                 boletoCustomizado.Id = GetLastAdded().Id;
 
                 //Adiciona Pagamentos
-                foreach (var pagamento in boletoCustomizado.Pagamentos)
-                {
-                    pagamento.BoletoCustomizadoId = boletoCustomizado.Id;
-                    pagamentoDAO.Insert(pagamento);
-                }
+                //foreach (var pagamento in boletoCustomizado.Pagamentos)
+                //{
+                //    pagamento.BoletoCustomizadoId = boletoCustomizado.Id;
+                //    pagamentoDAO.Insert(pagamento);
+                //}
             }
         }
         public BoletoCustomizado GetLastAdded()
