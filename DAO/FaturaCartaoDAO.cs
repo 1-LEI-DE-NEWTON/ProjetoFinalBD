@@ -157,6 +157,7 @@ namespace ProjetoFinalBD.DAO
         public List<FaturaCartao> GetByCartaoId(int id)
         {
             List<FaturaCartao> faturas = new List<FaturaCartao>();
+
             using (var connection = GetConnection())
             {
                 connection.Open();
@@ -198,6 +199,48 @@ namespace ProjetoFinalBD.DAO
                 }
             }
             return faturas;
+        }
+
+        public void Update(FaturaCartao faturaCartao)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "UPDATE FaturaCartao SET MesReferencia = @MesReferencia, " +
+                        "AnoReferencia = @AnoReferencia, Valor = @Valor, DataPagamento = " +
+                        "@DataPagamento, CartaoCreditoId = @CartaoCreditoId WHERE Id = @Id";
+                    
+                    command.Parameters.AddWithValue("MesReferencia", faturaCartao.MesReferencia);
+                    command.Parameters.AddWithValue("AnoReferencia", faturaCartao.AnoReferencia);
+                    command.Parameters.AddWithValue("Valor", faturaCartao.Valor);
+                    command.Parameters.AddWithValue("DataPagamento", faturaCartao.DataPagamento);
+                    command.Parameters.AddWithValue("CartaoCreditoId", faturaCartao.CartaoCreditoId);
+                    command.Parameters.AddWithValue("Id", faturaCartao.Id);
+
+                    command.ExecuteNonQuery();
+                }
+
+                //Atualiza os itens da fatura
+                foreach (var item in faturaCartao.ItensFaturas)
+                {
+                    itensFaturaDAO.Update(item);
+                }
+                
+                //Atualiza BoletosCustomizados
+                foreach (var boleto in faturaCartao.BoletosCustomizados)
+                {
+                    boletoCustomizadoDAO.Update(boleto);
+                }
+                
+                //Atualiza Pagamentos
+                foreach (var pagamento in faturaCartao.Pagamentos)
+                {
+                    pagamentoDAO.Update(pagamento);
+                }
+            }
         }
         public void Delete(int id)
         {

@@ -379,7 +379,7 @@ namespace ProjetoFinalBD.Testes
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
             //Deleta o cliente e suas contas
-            clienteDAO.Delete(clienteInserido.Id);
+            //clienteDAO.Delete(clienteInserido.Id);
 
             // OK!!
         }

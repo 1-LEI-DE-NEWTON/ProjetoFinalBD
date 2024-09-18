@@ -90,7 +90,9 @@ namespace ProjetoFinalBD.DAO
 
                                 CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId"))),
 
-                                CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(reader.GetInt32(reader.GetOrdinal("Id")))
+                                CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                FaturasCartao = faturaCartaoDAO.GetByCartaoId(reader.GetInt32(reader.GetOrdinal("Id")))
                             };
                         }
                     }
@@ -126,8 +128,9 @@ namespace ProjetoFinalBD.DAO
 
                                 CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId"))),
 
+                                CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(id),
 
-                                CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(id)
+                                FaturasCartao = faturaCartaoDAO.GetByCartaoId(id)
                             };
                         }
                     }
@@ -164,7 +167,9 @@ namespace ProjetoFinalBD.DAO
 
                                 CategoriaCartao = categoriaCartaoDAO.GetById(reader.GetInt32(reader.GetOrdinal("CategoriaCartaoId"))),
 
-                                CartaoTransacoes = new List<CartaoTransacao>()
+                                CartaoTransacoes = new List<CartaoTransacao>(),
+
+                                FaturasCartao = new List<FaturaCartao>()
                             });
                         }
 
@@ -173,6 +178,7 @@ namespace ProjetoFinalBD.DAO
                             foreach (var cartao in cartoes)
                             {
                                 cartao.CartaoTransacoes = cartaoTransacaoDAO.GetTransacoesByCartaoId(cartao.Id);
+                                cartao.FaturasCartao = faturaCartaoDAO.GetByCartaoId(cartao.Id);
                             }
                         }
                         return cartoes;
@@ -210,10 +216,17 @@ namespace ProjetoFinalBD.DAO
                         transacao.CartaoId = cartaoCredito.Id;
                         cartaoTransacaoDAO.Update(transacao);
                     }
+
+                    //Atualiza faturasCartao
+                    foreach (var fatura in cartaoCredito.FaturasCartao)
+                    {
+                        fatura.CartaoCreditoId = cartaoCredito.Id;
+                        faturaCartaoDAO.Update(fatura);
+                    }
                 }
             }
         }
-        public void Delete(int id) // FALTA DELETAR PAGAMENTO BOLETO E FATURA
+        public void Delete(int id) // FALTA DELETAR FATURA
         {
             using (var connection = GetConnection())
             {
@@ -234,9 +247,11 @@ namespace ProjetoFinalBD.DAO
 
                 //Deleta as transações do cartão
                 cartaoTransacaoDAO.DeleteByCartaoId(id);
+                //Deleta as faturas do cartao
+                faturaCartaoDAO.DeleteByCartaoId(id);
             }
         }
-        public void DeleteByContaId(int contaId) // FALTA DELETAR PAGAMENTO BOLETO E FATURA
+        public void DeleteByContaId(int contaId)
         {
             using (var connection = GetConnection())
             {

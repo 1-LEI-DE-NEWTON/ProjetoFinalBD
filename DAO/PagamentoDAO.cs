@@ -132,8 +132,7 @@ namespace ProjetoFinalBD.DAO
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT Id, ValorTotal, DataPagamento, FaturaCartaoId, " +
-                        "ValorParcial, BoletoCustomizadoId FROM Pagamento WHERE FaturaCartaoId = @FaturaCartaoId";
+                    command.CommandText = "SELECT * FROM Pagamento WHERE FaturaCartaoId = @FaturaCartaoId";
                     command.Parameters.AddWithValue("FaturaCartaoId", id);
 
                     using (var reader = command.ExecuteReader())
@@ -147,7 +146,7 @@ namespace ProjetoFinalBD.DAO
                                 DataPagamento = reader.GetDateTime(2),
                                 FaturaCartaoId = reader.GetInt32(3),
                                 ValorParcial = reader.GetString(4),
-                                BoletoCustomizadoId = reader.GetInt32(5)
+                                BoletoCustomizadoId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5)
                             });
                         }
                     }
