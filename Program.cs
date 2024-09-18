@@ -32,7 +32,20 @@ class Program
 
                 #region Testes Conta
                 TesteContaDAO contaDAOTeste = new TesteContaDAO();
-                contaDAOTeste.RunTests();
+
+                //contaDAOTeste.RunTests();
+                for (int i = 0; i < 10; i++)
+                {
+                    contaDAOTeste.RunTests();
+                }
+
+                //contaDAOTeste.DeleteClienteTeste(182);
+
+                //for (int i = 182; i < 183; i++)
+                //{
+                //    contaDAOTeste.DeleteClienteTeste(i);
+                //}
+                
                 #endregion
 
                 #endregion Testes

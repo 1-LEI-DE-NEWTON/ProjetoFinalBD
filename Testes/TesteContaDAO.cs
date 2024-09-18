@@ -30,15 +30,14 @@ namespace ProjetoFinalBD.Testes
         public Cliente GerarClienteAleatorio()
         {
             // Listas de valores predefinidos
-            List<string> nomes = new List<string> { "João", "Maria", "Pedro", "Ana", "Carlos", "Beatriz", "Paulo", "Fernanda", "Lucas", "Juliana" };
-            List<string> cpfs = new List<string> { "12345678900", "09876543211", "11223344556", "66778899000", "11122233344", "55566677788", "99988877766", "44455566677", "33322211100", "00011122233" };
+            List<string> nomes = new List<string> { "João", "Maria", "Pedro", "Ana", "Carlos", "Beatriz", "Paulo", "Fernanda", "Lucas", "Juliana" };            
             List<string> fatorRisco = new List<string> { "Baixo", "Médio", "Alto" };
 
             Random random = new Random();
 
             // Gerar valores aleatórios para o cliente
             string nomeAleatorio = nomes[random.Next(nomes.Count)];
-            string cpfAleatorio = cpfs[random.Next(cpfs.Count)];
+            string cpfAleatorio = random.Next(100000000, 999999999).ToString();
             string fatorRiscoAleatorio = fatorRisco[random.Next(fatorRisco.Count)];
 
             // Criar objeto Cliente
@@ -355,7 +354,7 @@ namespace ProjetoFinalBD.Testes
             //Atualizar a conta
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
-            clienteDAO.Update(clienteInserido);
+            clienteDAO.Update(clienteInserido); //FATAL ERROR
 
             //Cria reservas para conta 0 (Conta 1)
             var reserva1 = GerarReservaAleatoria(new Random());
@@ -369,11 +368,11 @@ namespace ProjetoFinalBD.Testes
 
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
 
-            //Cria um cartao de credito
+            //Cria um cartao de credito para conta 0 (Conta 1)
              var cartaoCredito = GerarCartaoCreditoAleatorio(new Random());
             cartaoCredito.ContaId = clienteInserido.Contas[0].Id;                        
 
-            //Insere o cartao de credito
+            //Insere o cartao de credito para conta 1
             cartaoCreditoDAO.Insert(cartaoCredito);         
             //Obtem o cliente atualizado
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
@@ -383,5 +382,10 @@ namespace ProjetoFinalBD.Testes
 
             // OK!!
         }
+
+        public void DeleteClienteTeste(int ClienteId)
+        {
+            clienteDAO.Delete(ClienteId);
+        }        
     }
 }
