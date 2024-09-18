@@ -299,7 +299,9 @@ namespace ProjetoFinalBD.Testes
             
 
             //Insere o cartao de credito
-            cartaoCreditoDAO.Insert(cartaoCredito);
+            cartaoCreditoDAO.Insert(cartaoCredito); // FALTA FAZER TESTES PARA INCLUIR FATURA CARTAO 
+                                                    // FALTA FAZER TESTES PARA INCLUIR PAGAMENTO
+                                                    // FALTA FAZER TESTES PARA INCLUIR BOLETO CUSTOMIZADO
 
             //Obtem o cliente atualizado
             clienteInserido = clienteDAO.GetByPessoaId(idPessoa);            
