@@ -18,17 +18,6 @@ namespace ProjetoFinalBD.DAO
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    //            public class Pagamento
-                    //{
-                    //    public int Id { get; set; }
-                    //    public string ValorTotal { get; set; }
-                    //    public DateTime DataPagamento { get; set; }
-                    //    public int? FaturaCartaoId { get; set; } // Foreign Key para FaturaCartao
-                    //    public FaturaCartao FaturaCartao { get; set; }
-                    //    public string ValorParcial { get; set; }
-                    //    public int? BoletoCustomizadoId { get; set; } // Foreign Key para BoletoCustomizado
-                    //    public BoletoCustomizado BoletoCustomizado { get; set; }
-                    //}
                     command.CommandText = "INSERT INTO Pagamento (ValorTotal, DataPagamento, FaturaCartaoId, " +
                         "ValorParcial, BoletoCustomizadoId) VALUES (@ValorTotal, @DataPagamento, " +
                         "@FaturaCartaoId, @ValorParcial, @BoletoCustomizadoId)";
@@ -185,6 +174,21 @@ namespace ProjetoFinalBD.DAO
                     command.ExecuteNonQuery();
                 }
             }            
+        }
+        
+        public void DeleteByFaturaCartaoId(int id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "DELETE FROM Pagamento WHERE FaturaCartaoId = @FaturaCartaoId";
+                    command.Parameters.AddWithValue("FaturaCartaoId", id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
         }
     }
 }

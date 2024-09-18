@@ -108,5 +108,19 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
+        public void DeleteByFaturaCartaoId(int id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "DELETE FROM ItensFatura WHERE FaturaCartaoId = @FaturaCartaoId";
+                    command.Parameters.AddWithValue("FaturaCartaoId", id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

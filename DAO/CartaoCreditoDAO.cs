@@ -213,7 +213,7 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
-        public void Delete(int id)
+        public void Delete(int id) // FALTA DELETAR PAGAMENTO BOLETO E FATURA
         {
             using (var connection = GetConnection())
             {
@@ -236,7 +236,7 @@ namespace ProjetoFinalBD.DAO
                 cartaoTransacaoDAO.DeleteByCartaoId(id);
             }
         }
-        public void DeleteByContaId(int contaId)
+        public void DeleteByContaId(int contaId) // FALTA DELETAR PAGAMENTO BOLETO E FATURA
         {
             using (var connection = GetConnection())
             {
@@ -264,6 +264,11 @@ namespace ProjetoFinalBD.DAO
                 {
                     cartaoTransacaoDAO.DeleteByCartaoId(cartao.Id);
                 }
+                //Deleta as faturas associadas
+                foreach (var cartao in cartoes)
+                {
+                    faturaCartaoDAO.DeleteByCartaoId(cartao.Id);
+                }                                                
             }
         }                
     }

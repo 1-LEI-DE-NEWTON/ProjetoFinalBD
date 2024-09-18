@@ -142,5 +142,53 @@ namespace ProjetoFinalBD.DAO
                 }
             }
         }
+        public void Delete(int id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                //Deleta os itens da fatura
+                itensFaturaDAO.DeleteByFaturaCartaoId(id);
+
+                //Deleta os Boletos Customizados
+                boletoCustomizadoDAO.DeleteByFaturaCartaoId(id);
+
+                //Deleta os pagamentos
+                pagamentoDAO.DeleteByFaturaCartaoId(id);
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "DELETE FROM FaturaCartao WHERE Id = @Id";
+                    command.Parameters.AddWithValue("Id", id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteByCartaoId(int id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                //Deleta os itens da fatura
+                itensFaturaDAO.DeleteByCartaoId(id);
+
+                //Deleta os Boletos Customizados
+                boletoCustomizadoDAO.DeleteByCartaoId(id);
+
+                //Deleta os pagamentos
+                pagamentoDAO.DeleteByCartaoId(id);
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "DELETE FROM FaturaCartao WHERE CartaoCreditoId = @CartaoCreditoId";
+                    command.Parameters.AddWithValue("CartaoCreditoId", id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

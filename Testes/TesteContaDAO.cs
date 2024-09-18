@@ -376,11 +376,11 @@ namespace ProjetoFinalBD.Testes
             //Insere o cartao de credito
             cartaoCreditoDAO.Insert(cartaoCredito);         
             //Obtem o cliente atualizado
-            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);            
-            
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
+
             //Deleta o cliente e suas contas
-            //clienteDAO.Delete(clienteInserido.Id);
-            
+            clienteDAO.Delete(clienteInserido.Id);
+
             // OK!!
         }
     }
