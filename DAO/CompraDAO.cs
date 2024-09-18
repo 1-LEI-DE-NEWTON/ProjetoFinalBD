@@ -9,12 +9,10 @@ namespace ProjetoFinalBD.DAO
 {
     public class CompraDAO : DAOBase
     {
-        private readonly CorretorDAO corretorDAO;
-        private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
+        private readonly CorretorDAO corretorDAO;        
         public CompraDAO(string connectionString) : base(connectionString) 
         {
-            corretorDAO = new CorretorDAO(connectionString);
-            cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
+            corretorDAO = new CorretorDAO(connectionString);            
         }
 
         public void Insert(Compra compra)

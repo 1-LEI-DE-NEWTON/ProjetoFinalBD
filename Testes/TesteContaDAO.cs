@@ -139,6 +139,39 @@ namespace ProjetoFinalBD.Testes
             };
             return reserva;
         }
+        public Compra GerarCompraAleatoria(Random random)
+        {            
+            // Listas de valores predefinidos
+            List<string> credores = new List<string> { "Credor 1", "Credor 2", "Credor 3" };
+            List<string> tiposMovimentacao = new List<string> { "Depósito", "Saque", "Transferência" };
+            List<string> nomesCorretor = new List<string> { "Corretor 1", "Corretor 2", "Corretor 3" };
+
+            // Gerar valores aleatórios para a compra
+            string credorAleatorio = credores[random.Next(credores.Count)];
+            string tipoMovimentacaoAleatoria = tiposMovimentacao[random.Next(tiposMovimentacao.Count)];
+            double valorAleatorio = random.Next(0, 10000);
+            double taxaParcelamentoAleatoria = random.Next(0, 1000);
+            int quantidadeParcelasAleatoria = random.Next(0, 1000);
+
+            // Criar objeto Compra
+            var compra = new Compra
+            {
+                Id = random.Next(1, 1000),
+                Valor = valorAleatorio,
+                QuantidadeParcelas = quantidadeParcelasAleatoria,
+                TaxaParcelamento = taxaParcelamentoAleatoria,
+                Credor = credorAleatorio,
+                CorretorId = random.Next(1, 1000),
+                CartaoTransacaoId = random.Next(1, 1000),
+                DataCompra = DateTime.Now,
+                Corretor = new Corretor
+                {
+                    Id = random.Next(1, 1000),
+                    Nome = nomesCorretor[random.Next(nomesCorretor.Count)]
+                }
+            };
+            return compra;
+        }
         
         public CartaoTransacao GerarTransacaoAleatoria(Random random)
         {
@@ -179,6 +212,10 @@ namespace ProjetoFinalBD.Testes
                 {
                     Id = random.Next(1, 1000),
                     Descricao = bandeiras[random.Next(bandeiras.Count)]
+                },
+                Compras = new List<Compra>
+                {
+                    GerarCompraAleatoria(random)
                 }
             };
             return cartaoTransacao;
@@ -265,10 +302,8 @@ namespace ProjetoFinalBD.Testes
             cartaoCreditoDAO.Insert(cartaoCredito);
 
             //Obtem o cliente atualizado
-            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);
-
-            // FALTA FAZER TESTES PARA COMPRA + CORRETOR 
-
+            clienteInserido = clienteDAO.GetByPessoaId(idPessoa);            
+            
             //Deleta o cliente e suas contas
             clienteDAO.Delete(clienteInserido.Id);
         }

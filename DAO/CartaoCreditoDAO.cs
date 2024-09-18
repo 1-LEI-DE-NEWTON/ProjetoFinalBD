@@ -9,16 +9,12 @@ namespace ProjetoFinalBD.DAO
 {
     public class CartaoCreditoDAO : DAOBase
     {
-        private readonly CategoriaCartaoDAO categoriaCartaoDAO;
-        //private readonly ContaDAO contaDAO;
-        //private readonly FaturaCartaoDAO faturaCartaoDAO;        
+        private readonly CategoriaCartaoDAO categoriaCartaoDAO;       
         private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
 
         public CartaoCreditoDAO(string connectionString) : base(connectionString) 
         {
-            categoriaCartaoDAO = new CategoriaCartaoDAO(connectionString);
-            //contaDAO = new ContaDAO(connectionString);
-            //faturaCartaoDAO = new FaturaCartaoDAO(connectionString);
+            categoriaCartaoDAO = new CategoriaCartaoDAO(connectionString);            
             cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
          }
 
