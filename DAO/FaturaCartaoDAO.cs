@@ -98,7 +98,13 @@ namespace ProjetoFinalBD.DAO
                                 AnoReferencia = reader.GetString(reader.GetOrdinal("AnoReferencia")),
                                 Valor = reader.GetString(reader.GetOrdinal("Valor")),
                                 DataPagamento = reader.GetString(reader.GetOrdinal("DataPagamento")),
-                                CartaoCreditoId = reader.GetInt32(reader.GetOrdinal("CartaoCreditoId"))
+                                CartaoCreditoId = reader.GetInt32(reader.GetOrdinal("CartaoCreditoId")),
+
+                                ItensFaturas = itensFaturaDAO.GetByFaturaCartaoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                BoletosCustomizados = boletoCustomizadoDAO.GetByFaturaCartaoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                Pagamentos = pagamentoDAO.GetByFaturaCartaoId(reader.GetInt32(reader.GetOrdinal("Id")))                                
                             };
                         }
                         else
@@ -132,6 +138,12 @@ namespace ProjetoFinalBD.DAO
                                 Valor = reader.GetString(reader.GetOrdinal("Valor")),
                                 DataPagamento = reader.GetString(reader.GetOrdinal("DataPagamento")),
                                 CartaoCreditoId = reader.GetInt32(reader.GetOrdinal("CartaoCreditoId")),
+
+                                ItensFaturas = itensFaturaDAO.GetByFaturaCartaoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                BoletosCustomizados = boletoCustomizadoDAO.GetByFaturaCartaoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                Pagamentos = pagamentoDAO.GetByFaturaCartaoId(reader.GetInt32(reader.GetOrdinal("Id")))                                
                             };
                         }
                         else
@@ -141,6 +153,51 @@ namespace ProjetoFinalBD.DAO
                     }
                 }
             }
+        }
+        public List<FaturaCartao> GetByCartaoId(int id)
+        {
+            List<FaturaCartao> faturas = new List<FaturaCartao>();
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT * FROM FaturaCartao WHERE CartaoCreditoId = @CartaoCreditoId";
+                    command.Parameters.AddWithValue("CartaoCreditoId", id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            faturas.Add(new FaturaCartao
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                MesReferencia = reader.GetString(reader.GetOrdinal("MesReferencia")),
+                                AnoReferencia = reader.GetString(reader.GetOrdinal("AnoReferencia")),
+                                Valor = reader.GetString(reader.GetOrdinal("Valor")),
+                                DataPagamento = reader.GetString(reader.GetOrdinal("DataPagamento")),
+                                CartaoCreditoId = reader.GetInt32(reader.GetOrdinal("CartaoCreditoId")),
+
+                                ItensFaturas = new List<ItensFatura>(),
+                                BoletosCustomizados = new List<BoletoCustomizado>(),
+                                Pagamentos = new List<Pagamento>()
+                            });
+                        }
+
+                        if (faturas.Count > 0)
+                        {
+                            foreach (var fatura in faturas)
+                            {
+                                fatura.ItensFaturas = itensFaturaDAO.GetByFaturaCartaoId(fatura.Id);
+                                fatura.BoletosCustomizados = boletoCustomizadoDAO.GetByFaturaCartaoId(fatura.Id);
+                                fatura.Pagamentos = pagamentoDAO.GetByFaturaCartaoId(fatura.Id);
+                            }
+                        }                        
+                    }
+                }
+            }
+            return faturas;
         }
         public void Delete(int id)
         {
@@ -172,14 +229,26 @@ namespace ProjetoFinalBD.DAO
             {
                 connection.Open();
 
+                //Obtem a lista das faturas
+                var faturas = GetByCartaoId(id);
+
                 //Deleta os itens da fatura
-                itensFaturaDAO.DeleteByCartaoId(id);
+                foreach (var fatura in faturas)
+                {
+                    itensFaturaDAO.DeleteByFaturaCartaoId(fatura.Id);
+                }                
 
                 //Deleta os Boletos Customizados
-                boletoCustomizadoDAO.DeleteByCartaoId(id);
+                foreach (var fatura in faturas)
+                {
+                    boletoCustomizadoDAO.DeleteByFaturaCartaoId(fatura.Id);
+                }                                
 
                 //Deleta os pagamentos
-                pagamentoDAO.DeleteByCartaoId(id);
+                foreach (var fatura in faturas)
+                {
+                    pagamentoDAO.DeleteByFaturaCartaoId(fatura.Id);
+                }                
 
                 using (var command = connection.CreateCommand())
                 {

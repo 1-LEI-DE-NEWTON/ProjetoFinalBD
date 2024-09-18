@@ -42,16 +42,6 @@ namespace ProjetoFinalBD.DAO
                     
                     command.ExecuteNonQuery();
                 }
-
-                //Obtem BoletoCustomizadoId pelo ultimo adicionado
-                boletoCustomizado.Id = GetLastAdded().Id;
-
-                //Adiciona Pagamentos
-                //foreach (var pagamento in boletoCustomizado.Pagamentos)
-                //{
-                //    pagamento.BoletoCustomizadoId = boletoCustomizado.Id;
-                //    pagamentoDAO.Insert(pagamento);
-                //}
             }
         }
         public BoletoCustomizado GetLastAdded()
@@ -77,7 +67,9 @@ namespace ProjetoFinalBD.DAO
                                 TipoBoletoCustomizadoId = reader.GetInt32(reader.GetOrdinal("TipoBoletoCustomizadoId")),
                                 FaturaCartaoId = reader.GetInt32(reader.GetOrdinal("FaturaCartaoId")),
 
-                                Pagamentos = pagamentoDAO.GetByBoletoCustomizadoId(reader.GetInt32(reader.GetOrdinal("Id")))
+                                Pagamentos = pagamentoDAO.GetByBoletoCustomizadoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                TipoBoletoCustomizado = tipoBoletoCustomizadoDAO.GetById(reader.GetInt32(reader.GetOrdinal("TipoBoletoCustomizadoId")))
                             };
                         }
                     }
@@ -110,7 +102,9 @@ namespace ProjetoFinalBD.DAO
                                 TipoBoletoCustomizadoId = reader.GetInt32(reader.GetOrdinal("TipoBoletoCustomizadoId")),
                                 FaturaCartaoId = reader.GetInt32(reader.GetOrdinal("FaturaCartaoId")),
 
-                                Pagamentos = pagamentoDAO.GetByBoletoCustomizadoId(reader.GetInt32(reader.GetOrdinal("Id")))
+                                Pagamentos = pagamentoDAO.GetByBoletoCustomizadoId(reader.GetInt32(reader.GetOrdinal("Id"))),
+
+                                TipoBoletoCustomizado = tipoBoletoCustomizadoDAO.GetById(reader.GetInt32(reader.GetOrdinal("TipoBoletoCustomizadoId")))
                             };
                         }
                     }
@@ -144,8 +138,18 @@ namespace ProjetoFinalBD.DAO
                                 TipoBoletoCustomizadoId = reader.GetInt32(reader.GetOrdinal("TipoBoletoCustomizadoId")),
                                 FaturaCartaoId = reader.GetInt32(reader.GetOrdinal("FaturaCartaoId")),
 
-                                Pagamentos = pagamentoDAO.GetByBoletoCustomizadoId(reader.GetInt32(reader.GetOrdinal("Id")))
+                                Pagamentos = new List<Pagamento>(),
+
+                                TipoBoletoCustomizado = tipoBoletoCustomizadoDAO.GetById(reader.GetInt32(reader.GetOrdinal("TipoBoletoCustomizadoId")))
                             });
+                        }
+
+                        if (boletosCustomizados.Count > 0)
+                        {
+                            foreach (var boletoCustomizado in boletosCustomizados)
+                            {
+                                boletoCustomizado.Pagamentos = pagamentoDAO.GetByBoletoCustomizadoId(boletoCustomizado.Id);
+                            }
                         }
                     }
                 }
@@ -158,6 +162,9 @@ namespace ProjetoFinalBD.DAO
             using (var connection = GetConnection())
             {
                 connection.Open();
+                //Atualiza o TipoBoletoCustomizado
+                tipoBoletoCustomizadoDAO.Update(boletoCustomizado.TipoBoletoCustomizado);
+
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = "UPDATE BoletoCustomizado SET Valor = @Valor, DataVencimento = @DataVencimento, DataGeracao = @DataGeracao, CodigoBarras = @CodigoBarras, TipoBoletoCustomizadoId = @TipoBoletoCustomizadoId, FaturaCartaoId = @FaturaCartaoId WHERE Id = @Id";
@@ -170,6 +177,12 @@ namespace ProjetoFinalBD.DAO
                     command.Parameters.AddWithValue("Id", boletoCustomizado.Id);
 
                     command.ExecuteNonQuery();
+                }
+
+                //Atualiza Pagamentos
+                foreach (var pagamento in boletoCustomizado.Pagamentos)
+                {
+                    pagamentoDAO.Update(pagamento);
                 }
             }
         }
@@ -198,6 +211,8 @@ namespace ProjetoFinalBD.DAO
             using (var connection = GetConnection())
             {
                 connection.Open();
+                var boletos = GetByFaturaCartaoId(id);
+
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = "DELETE FROM BoletoCustomizado WHERE FaturaCartaoId = @FaturaCartaoId";
@@ -205,18 +220,18 @@ namespace ProjetoFinalBD.DAO
 
                     command.ExecuteNonQuery();
                 }
-            }
+                
+                //Deleta Pagamentos
+                foreach (var boletoCustomizado in boletos)
+                {
+                    pagamentoDAO.DeleteByBoletoCustomizadoId(boletoCustomizado.Id);
+                }
 
-            //Deleta Pagamentos
-            foreach (var boletoCustomizado in GetByFaturaCartaoId(id))
-            {
-                pagamentoDAO.DeleteByBoletoCustomizadoId(boletoCustomizado.Id);
-            }
-
-            //Deleta TipoBoletoCustomizado
-            foreach (var boletoCustomizado in GetByFaturaCartaoId(id))
-            {
-                tipoBoletoCustomizadoDAO.Delete(boletoCustomizado.TipoBoletoCustomizadoId);
+                //Deleta TipoBoletoCustomizado
+                foreach (var boletoCustomizado in boletos)
+                {
+                    tipoBoletoCustomizadoDAO.Delete(boletoCustomizado.TipoBoletoCustomizadoId);
+                }                        
             }
         }
     }

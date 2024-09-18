@@ -53,6 +53,33 @@ namespace ProjetoFinalBD.DAO
                 return null;
             }
         }
+        public List<ItensFatura> GetByFaturaCartaoId(int id)
+        {
+            var itensFaturas = new List<ItensFatura>();
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT Id, Descricao, FaturaCartaoId FROM ItensFatura WHERE FaturaCartaoId = @FaturaCartaoId";
+                    command.Parameters.AddWithValue("FaturaCartaoId", id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            itensFaturas.Add(new ItensFatura
+                            {
+                                Id = reader.GetInt32(0),
+                                Descricao = reader.GetString(1),
+                                FaturaCartaoId = reader.GetInt32(2)
+                            });
+                        }
+                    }
+                }
+            }
+            return itensFaturas;
+        }
         public ItensFatura GetLastAdded()
         {
             using (var connection = GetConnection())

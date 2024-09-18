@@ -123,6 +123,38 @@ namespace ProjetoFinalBD.DAO
             }
             return pagamentos;
         }
+
+        public List<Pagamento> GetByFaturaCartaoId(int id)
+        {
+            List<Pagamento> pagamentos = new List<Pagamento>();
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT Id, ValorTotal, DataPagamento, FaturaCartaoId, " +
+                        "ValorParcial, BoletoCustomizadoId FROM Pagamento WHERE FaturaCartaoId = @FaturaCartaoId";
+                    command.Parameters.AddWithValue("FaturaCartaoId", id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            pagamentos.Add(new Pagamento
+                            {
+                                Id = reader.GetInt32(0),
+                                ValorTotal = reader.GetString(1),
+                                DataPagamento = reader.GetDateTime(2),
+                                FaturaCartaoId = reader.GetInt32(3),
+                                ValorParcial = reader.GetString(4),
+                                BoletoCustomizadoId = reader.GetInt32(5)
+                            });
+                        }
+                    }
+                }
+            }
+            return pagamentos;
+        }
         public void Update(Pagamento pagamento)
         {
             using (var connection = GetConnection())
@@ -175,7 +207,7 @@ namespace ProjetoFinalBD.DAO
                 }
             }            
         }
-        
+
         public void DeleteByFaturaCartaoId(int id)
         {
             using (var connection = GetConnection())
