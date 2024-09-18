@@ -11,12 +11,14 @@ namespace ProjetoFinalBD.DAO
     {
         private readonly CategoriaCartaoDAO categoriaCartaoDAO;       
         private readonly CartaoTransacaoDAO cartaoTransacaoDAO;
+        private readonly FaturaCartaoDAO faturaCartaoDAO;
 
         public CartaoCreditoDAO(string connectionString) : base(connectionString) 
         {
             categoriaCartaoDAO = new CategoriaCartaoDAO(connectionString);            
             cartaoTransacaoDAO = new CartaoTransacaoDAO(connectionString);
-         }
+            faturaCartaoDAO = new FaturaCartaoDAO(connectionString);
+        }
 
         public void Insert(CartaoCredito cartaoCredito)
         {
@@ -29,9 +31,7 @@ namespace ProjetoFinalBD.DAO
                     //Insere a categoria do Cartão de Crédito
                     categoriaCartaoDAO.Insert(cartaoCredito.CategoriaCartao);
                     //Obtem o categoriaCartaoId pelo ultimo inserido
-                    cartaoCredito.CategoriaCartaoId = categoriaCartaoDAO.GetByLastAdded().Id;
-
-                    //Insere a fatura do Cartão de Crédito       //A FAZER
+                    cartaoCredito.CategoriaCartaoId = categoriaCartaoDAO.GetByLastAdded().Id;                                        
                     
                     string query = "INSERT INTO cartaoCredito (DataFechamento, ContaId, " +
                         "CategoriaCartaoId, LimiteCredito) VALUES (@DataFechamento, " +
@@ -53,7 +53,13 @@ namespace ProjetoFinalBD.DAO
                     {
                         transacao.CartaoId = cartaoCredito.Id;
                         cartaoTransacaoDAO.Insert(transacao);
-                    }                                    
+                    }
+                    //Adiciona as faturas do Cartão de Crédito
+                    foreach (var fatura in cartaoCredito.FaturasCartao)
+                    {
+                        fatura.CartaoCreditoId = cartaoCredito.Id;
+                        faturaCartaoDAO.Insert(fatura);
+                    }
                 }
             }
         }

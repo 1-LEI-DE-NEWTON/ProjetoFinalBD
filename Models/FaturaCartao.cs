@@ -17,5 +17,9 @@ namespace ProjetoFinalBD.Models
         public CartaoCredito CartaoCredito { get; set; }
         // Relacionamento 1-N com ItensFatura
         public List<ItensFatura> ItensFaturas { get; set; }
+        // Relacionamento 1-N com BoletoCustomizado
+        public List<BoletoCustomizado> BoletosCustomizados { get; set; }
+        // Relacionamento 1-N com Pagamento
+        public List<Pagamento> Pagamentos { get; set; }
     }
 }
