@@ -69,6 +69,31 @@ namespace ProjetoFinalBD.DAO
             }
         }
 
+        public TipoBoletoCustomizado GetLastAdded()
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT Id, Descricao FROM TipoBoletoCustomizado ORDER BY Id DESC LIMIT 1";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new TipoBoletoCustomizado
+                            {
+                                Id = reader.GetInt32(0),
+                                Descricao = reader.GetString(1)
+                            };
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
         public void Delete(int id)
         {
             using (var connection = GetConnection())

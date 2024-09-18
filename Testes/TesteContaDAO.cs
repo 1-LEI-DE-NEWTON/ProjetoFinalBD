@@ -306,6 +306,8 @@ namespace ProjetoFinalBD.Testes
             
             //Deleta o cliente e suas contas
             clienteDAO.Delete(clienteInserido.Id);
+            
+            // OK!!
         }
     }
 }
